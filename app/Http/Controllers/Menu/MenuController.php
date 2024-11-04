@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Menus;
+namespace App\Http\Controllers\Menu;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -10,27 +10,35 @@ use Illuminate\Support\Facades\Validator;
 use DB;
 use Illuminate\Support\Facades\Auth; 
 
-class MenusController extends Controller
+class MenuController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+
+    private $description = "Menu";
+
+    public function index(Request $request)
     {
-        //
+        $request->merge(['description' => $this->description]);
+        $accessResponse = $this->accessmenu($request);
 
-        $menu = Menu::all();
+        if ($accessResponse !== 1) {
+            return response()->json(['success' => false,'message' => 'Authorized']);
+        }
 
+        $menu = Menu::orderBy('sort', 'asc')->get();
         $result = [];
 
             for($m = 0; $m<count($menu); $m++){
 
 
-                $submenu = Submenu::where('transNo', $menu[$m]->transNo)->get();   
+                $submenu = Submenu::where('transNo', $menu[$m]->transNo)->orderBy('sort', 'asc') ->get();   
                 $sub = [];
                 for($su = 0; $su<count($submenu); $su++){
 
                     $sub[$su] = [
+                        "id" => $submenu[$su]->id,
                         "description" => $submenu[$su]->description,
                         "icon" => $submenu[$su]->icon,
                         "route" => $submenu[$su]->route,
@@ -39,6 +47,7 @@ class MenusController extends Controller
                 }
 
                 $result[$m] = [
+                    "id" => $menu[$m]->id,
                     "description" => $menu[$m]->description,
                     "icon" => $menu[$m]->icon,
                     "route" => $menu[$m]->route,
@@ -67,6 +76,12 @@ class MenusController extends Controller
     public function store(Request $request)
     {
         // 
+        $request->merge(['description' => $this->description]);
+        $accessResponse = $this->accessmenu($request);
+
+        if ($accessResponse !== 1) {
+            return response()->json(['success' => false, 'message' => 'Authorized']);
+        }
 
         try {
             DB::beginTransaction();
@@ -86,6 +101,13 @@ class MenusController extends Controller
                 ], 422); 
             }
 
+            // Check if the menu description already exists
+            $menuexists = Menu::where('description', $data['description'])->exists();
+
+            if ($menuexists) {
+                return response()->json(['success' => false, 'message' => 'Menu description already exists. Please avoid duplicates.']);
+            }
+
             $trans = Menu::max('transNo');
             $transNo = empty($trans) ? 1 : $trans + 1;
 
@@ -96,8 +118,8 @@ class MenusController extends Controller
                 'class'=>$data['class'],
                 'routes' =>$data['routes'],
                 'sort' =>$data['sort'],
-                // 'created_by',
-                // 'updated_by'
+                'created_by' => Auth::user()->fullname,
+                'updated_by' => Auth::user()->fullname
             ]);
 
             foreach($data['lines'] as $line){
@@ -109,9 +131,17 @@ class MenusController extends Controller
                     'sort' => 'required|integer',
                 ]);
 
+                
             
                 if ($lineValidator->fails()) {
                     $lineErrors[$index] = $lineValidator->errors();
+                }
+
+                // Check if the submenu description already exists
+                $subexists = Submenu::where('description', $line['description'])->exists();
+
+                if ($subexists) {
+                    return response()->json(['success' => false, 'message' => 'Submenu description already exists. Please avoid duplicates.']);
                 }
 
                 Submenu::insert([

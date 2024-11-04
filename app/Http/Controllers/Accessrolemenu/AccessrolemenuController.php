@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Roleaccessmodule;
+namespace App\Http\Controllers\Accessrolemenu;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -9,15 +9,15 @@ use App\Models\Roleaccessmenu;
 use App\Models\Roleaccesssubmenu;
 use App\Models\Submenu;
 use App\Models\Menu;
-class RoleaccessController extends Controller
+class AccessrolemenuController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
+    private $description = "Security roles";
 
     public function index()
     {   
-        //
         $modules = Roleaccessmenu::where('rolecode',Auth::user()->role_code)->get();
         $result = [];
         for ($m = 0; $m < count($modules); $m++) {
@@ -67,13 +67,6 @@ class RoleaccessController extends Controller
     public function store(Request $request)
     {
         //
-
-        try{
-                
-        } catch (\Throwable $th) {
-            DB::rollBack();
-            return response()->json(['success'=>false,'message' => $th->getMessage()  ]);
-        }
     }
 
     /**

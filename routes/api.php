@@ -6,8 +6,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use  App\Http\Controllers\Auth\RegisterController;
 
-use App\Http\Controllers\Roleaccessmodule\RoleaccessController;
-use App\Http\Controllers\Menus\MenusController;
+use App\Http\Controllers\Accessrolemenu\AccessrolemenuController;
+use App\Http\Controllers\Menu\MenuController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,8 +31,11 @@ Route::middleware(['auth:sanctum','checkstatus'])->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user(); // Return authenticated user information
     });
+    // User access to the menu depends on their role. GET 
+    Route::Resource('accessmenu',AccessrolemenuController::class)->names('accessmenu');
+
+    // menu GET , POST 
+    Route::Resource('menu',MenuController::class)->names('menu');
 
     
-    Route::Resource('accessmenu',RoleaccessController::class)->names('accessmenu');
-    Route::Resource('menu',MenusController::class)->names('menu');
 });
