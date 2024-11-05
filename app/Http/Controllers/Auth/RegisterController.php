@@ -19,7 +19,8 @@ class RegisterController extends Controller
             $validator = Validator::make($request->all(), [
                 'fname' => 'required|string|max:255',
                 'lname' => 'required|string|max:255',
-                'mname' => 'nullable|string|max:255',
+                // 'mname' => 'nullable|string|max:255',
+                'contactno' => 'nullable | string',
                 'email' => 'required|string|email|max:255|unique:users',
                 'password' => 'required|string|confirmed|min:1', // Includes password confirmation
             ]);
@@ -31,18 +32,19 @@ class RegisterController extends Controller
                 ], 422);
             }
 
-            $trans = User::max('code');
-            $transNo = empty($trans) ? 701 : $trans + 1;
+            $cod = User::max('code');
+            $code = empty($trans) ? 701 : $trans + 1;
 
             // Create the user
             $user = User::create([
                 'fname' => $request->fname,
                 'lname' => $request->lname,
-                'mname' => $request->mname,
-                'fullname' => $request->fname .' '.$request->mname.' '.$request->lname ,
+                'mname' => '',
+                'contactno' => $request->contactno,
+                'fullname' => ucfirst($request->fname .' '.$request->lname) ,
                 'email' => $request->email,
                 'password' => Hash::make($request->password), 
-                'code' =>  $transNo ,
+                'code' =>  $code ,
                 'role_code' => "DEF-USERS",
             ]);
 
