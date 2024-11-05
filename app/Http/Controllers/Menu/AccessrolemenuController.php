@@ -138,8 +138,8 @@ class AccessrolemenuController extends Controller
                         }
                     }
                 }
-            }
-            
+            }       
+                    
             // Commit transaction if all inserts succeed
             DB::commit();
             return response()->json(['success' => true, 'message' => 'Data inserted successfully']);
@@ -149,8 +149,7 @@ class AccessrolemenuController extends Controller
             DB::rollBack();
             return response()->json(['success' => false, 'message' => $th->getMessage()]);
         }
-        
-        
+    
     }
 
     /**
