@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('submenus', function (Blueprint $table) {
             $table->id();
             $table->integer('transNo'); // Assuming this references the menus table
+            $table->string('desc_code'); 
             $table->string('description'); // Assuming description is required
             $table->string('icon'); // Assuming icon is required
             $table->string('class'); // Assuming class is required

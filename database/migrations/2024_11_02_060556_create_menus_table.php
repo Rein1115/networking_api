@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('menus', function (Blueprint $table) {
             $table->id();
             $table->string('transNo'); 
+            $table->string('desc_code'); 
             $table->string('description'); // Assuming description is required
             $table->string('icon'); // Assuming icon is required
             $table->string('class'); // Assuming class is required
