@@ -23,6 +23,5 @@ class Submenu extends Model
         'status',
         'created_by'
     ];
-    
 
 }
