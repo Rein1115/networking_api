@@ -186,8 +186,6 @@ class AccessrolemenuController extends Controller
 }
 
 
-
-
 // accessmenu.index GET 
 // {
 //     "desc_code" : "tnavigation_token"
