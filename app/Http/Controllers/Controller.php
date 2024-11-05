@@ -22,14 +22,14 @@ class Controller extends BaseController
         $roleaccessmenu = DB::select('SELECT COUNT(m.id) as count 
             FROM roleaccessmenus AS r 
             INNER JOIN menus AS m ON m.id = r.menus_id 
-            WHERE r.rolecode = ? AND m.description = ?',
+            WHERE r.rolecode = ? AND m.description = ? AND m.status = "A"',
             [Auth::user()->role_code, $request->description]
         );
 
         $roleaccesssub = DB::select('SELECT COUNT(s.id) as count 
             FROM roleaccesssubmenus AS r 
             INNER JOIN submenus AS s ON s.id = r.submenus_id 
-            WHERE r.rolecode = ? AND s.description = ?',
+            WHERE r.rolecode = ? AND s.description = ? AND s.status = "A"',
             [Auth::user()->role_code, $request->description]
         );
 

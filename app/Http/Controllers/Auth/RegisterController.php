@@ -14,6 +14,9 @@ class RegisterController extends Controller
     public function register(Request $request)
     {
        try {
+
+
+
             // Validate the request data
             DB::beginTransaction();
             $validator = Validator::make($request->all(), [
@@ -62,3 +65,17 @@ class RegisterController extends Controller
     }
 
 }
+
+
+
+
+
+// register POST
+// {
+//     "fname" : "TESTFNAME",
+//     "lname":"TESTLNAME",
+//     "email" : "TEST@gmail.com",
+//     "contactno" : "+630908199829292", 
+//     "password": "1",
+//     "password_confirmation" : "1"
+//  }

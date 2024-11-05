@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('roleaccesssubmenus', function (Blueprint $table) {
             $table->id();
             $table->string('rolecode'); // Assuming role code is required
-            $table->integer('rolemenus_id');
+            $table->integer('transNo');
             $table->integer('submenus_id'); // Assuming this references the sub_menus table
             $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();

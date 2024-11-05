@@ -18,6 +18,7 @@ class Submenu extends Model
         'class',
         'routes',
         'sort',
+        'status',
         'created_by'
     ];
 }

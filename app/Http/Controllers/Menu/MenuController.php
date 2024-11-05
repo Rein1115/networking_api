@@ -16,16 +16,16 @@ class MenuController extends Controller
      * Display a listing of the resource.
      */
 
-    private $description = "Menu";
+    // private $description = "Menu";
 
     public function index(Request $request)
     {
-        $request->merge(['description' => $this->description]);
-        $accessResponse = $this->accessmenu($request);
+        // $request->merge(['description' => $this->description]);
+        // $accessResponse = $this->accessmenu($request);
 
-        if ($accessResponse !== 1) {
-            return response()->json(['success' => false,'message' => 'Authorized']);
-        }
+        // if ($accessResponse !== 1) {
+        //     return response()->json(['success' => false,'message' => 'Authorized']);
+        // }
 
         $menu = Menu::orderBy('sort', 'asc')->get();
         $result = [];
@@ -76,12 +76,12 @@ class MenuController extends Controller
     public function store(Request $request)
     {
         // 
-        $request->merge(['description' => $this->description]);
-        $accessResponse = $this->accessmenu($request);
+        // $request->merge(['description' => $this->description]);
+        // $accessResponse = $this->accessmenu($request);
 
-        if ($accessResponse !== 1) {
-            return response()->json(['success' => false, 'message' => 'Authorized']);
-        }
+        // if ($accessResponse !== 1) {
+        //     return response()->json(['success' => false, 'message' => 'Authorized']);
+        // }
 
         try {
             DB::beginTransaction();
@@ -91,14 +91,15 @@ class MenuController extends Controller
                 'icon' => 'required|string',
                 'class' => 'required|string',
                 'routes' => 'required|string',
-                'sort' => 'required|integer'
+                'sort' => 'required|integer',
+                'status' => 'nullable|string'
             ]);
             
             if ($header->fails()) {
                 return response()->json([
                     'success' => false,  // Indicate failure
                     'message' => $header->errors()  // Return validation errors
-                ], 422); 
+                ]); 
             }
 
             // Check if the menu description already exists
@@ -118,6 +119,7 @@ class MenuController extends Controller
                 'class'=>$data['class'],
                 'routes' =>$data['routes'],
                 'sort' =>$data['sort'],
+                'status' => $data['status'] ? $data['status'] : 'I',
                 'created_by' => Auth::user()->fullname,
                 'updated_by' => Auth::user()->fullname
             ]);
@@ -129,6 +131,7 @@ class MenuController extends Controller
                     'class' => 'required|string',
                     'routes' => 'required|string',
                     'sort' => 'required|integer',
+                    'status' => 'nullable|string'
                 ]);
 
                 
@@ -151,6 +154,7 @@ class MenuController extends Controller
                     'class'=>$line['class'],
                     'routes' =>$line['routes'],
                     'sort' =>$line['sort'],
+                    'status' => $line['status'] ? $line['status'] : 'I',
                     // 'created_by',
                     // 'updated_by',
                 ]);
@@ -203,3 +207,39 @@ class MenuController extends Controller
         //
     }
 }
+
+// menu.store POST 
+// {
+//     "description" : "Security roles",
+//     "icon" : "icon-sys",
+//     "class" : "class-sys",
+//     "routes" : "sys.index",
+//     "sort" : "5",
+//     "status" : "A",
+//     "lines" : [
+//         {
+//             "description" :"Security roles",
+//             "icon" : "icon-sr",
+//             "class" : "class-sr",
+//             "routes" : "security.index",
+//             "sort" :"1",
+//             "status" : "I"
+//         },
+//         {
+//             "description" :"Users",
+//             "icon" : "icon-user",
+//             "class" : "class-user",
+//             "routes" : "user.index",
+//             "sort" :"2",
+//             "status" : "I"
+//         },
+//         {
+//             "description" :"Menu",
+//             "icon" : "icon-menu",
+//             "class" : "class-menu",
+//             "routes" : "menu.index",
+//             "sort" :"3",
+//             "status" : "A"
+//         }
+//     ]
+// }

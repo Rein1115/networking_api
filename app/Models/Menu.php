@@ -17,6 +17,7 @@ class Menu extends Model
         'class',
         'routes',
         'sort',
+        'status',
         'created_by',
         'updated_by'
     ];

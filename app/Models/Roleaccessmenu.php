@@ -14,6 +14,7 @@ class Roleaccessmenu extends Model
 
     protected $fillable = [
         'rolecode', // example field
+        'transNo',
         'menus_id', // example field
         'created_by',
         'updated_by'

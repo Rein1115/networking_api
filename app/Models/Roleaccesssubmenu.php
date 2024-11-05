@@ -13,6 +13,7 @@ class Roleaccesssubmenu extends Model
 
     protected $fillable = [
         'rolecode',
+        'transNo',
         'rolemenus_id',
         'submenus_id',
         'created_by',

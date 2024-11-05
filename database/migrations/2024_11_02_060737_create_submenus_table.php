@@ -19,11 +19,10 @@ return new class extends Migration
             $table->string('class'); // Assuming class is required
             $table->string('routes'); // Assuming routes is required
             $table->integer('sort')->nullable(); // Assuming sort can be nullable
+            $table->string('status')->default('A');
             $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();
             $table->timestamps(); // Includes created_at and updated_at
-
-
         });
     }
 

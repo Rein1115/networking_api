@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Accessrolemenu;
+namespace App\Http\Controllers\Menu;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth; 
+use Illuminate\Support\Facades\Validator;
 use App\Models\Roleaccessmenu;
 use App\Models\Roleaccesssubmenu;
 use App\Models\Submenu;
@@ -21,15 +22,18 @@ class AccessrolemenuController extends Controller
         $modules = Roleaccessmenu::where('rolecode',Auth::user()->role_code)->get();
         $result = [];
         for ($m = 0; $m < count($modules); $m++) {
-            $menus =  Menu::where('id',$modules[$m]->menus_id)
+            $menus =  Menu::where('id',$modules[$m]->menus_id) ->where('status', 'A')
             ->orderBy('sort') 
             ->get();
             for($me = 0; $me<count($menus); $me++){
-                $submodule = Roleaccesssubmenu::where([['rolecode',Auth::user()->role_code],['rolemenus_id', $modules[$m]->id]])->get();
+
+                $submodule = Roleaccesssubmenu::where([['rolecode',Auth::user()->role_code],['transNo', $modules[$m]->transNo]])->get();
 
                 $sub = [];
                 for($sb = 0 ; $sb<count($submodule); $sb++){
-                    $submenus = Submenu::where('id',$submodule[$sb]->submenus_id)->orderBy('sort')->get();
+                    $submenus = Submenu::where('id',$submodule[$sb]->submenus_id)
+                     ->where('status', 'A')
+                    ->orderBy('sort')->get();
                     for($su=0; $su<count($submenus); $su++){
                      
                         $sub[] = [
@@ -47,6 +51,7 @@ class AccessrolemenuController extends Controller
                     "sort" =>  $menus[$me]->sort,
                     "submenus" => $sub 
                 ]  ;
+
             }
 
         }
@@ -67,6 +72,36 @@ class AccessrolemenuController extends Controller
     public function store(Request $request)
     {
         //
+
+      // DB::beginTransaction();
+        // $data = $request->all();
+
+
+        // foreach($data as $header){
+
+        //     $head = Validator::make($header, [
+        //         'rolecode' => 'required|string',
+        //         'menus_id' => 'required|numeric'
+        //     ]);
+
+        //     if ($head->fails()) {
+        //         return response()->json([
+        //             'success' => false,  // Indicate failure
+        //             'message' => $head->errors()  // Return validation errors
+        //         ], 422); 
+        //     }
+
+        //     foreach($header['lines'] as $line){
+        //         $l = Validator::make($line, [
+        //             "rolecode" => 'required|string',
+        //         ])
+        //     }
+
+        // }
+
+
+
+
     }
 
     /**

@@ -56,3 +56,10 @@ class LoginController extends Controller
         return response()->json(['success' => false, 'error' => 'Unauthorized']);
     }
 }
+
+
+// login POST
+// {
+//     "email" : "TEST@gmail.com", 
+//     "password": "1",
+// }
