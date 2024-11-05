@@ -39,6 +39,7 @@ class MenuController extends Controller
 
                     $sub[$su] = [
                         "id" => $submenu[$su]->id,
+                        "desccode" => $submenu[$su]->desc_code,
                         "description" => $submenu[$su]->description,
                         "icon" => $submenu[$su]->icon,
                         "route" => $submenu[$su]->route,
@@ -48,6 +49,7 @@ class MenuController extends Controller
 
                 $result[$m] = [
                     "id" => $menu[$m]->id,
+                    "desccode" => $menu[$m]->desc_code,
                     "description" => $menu[$m]->description,
                     "icon" => $menu[$m]->icon,
                     "route" => $menu[$m]->route,
@@ -87,6 +89,7 @@ class MenuController extends Controller
             DB::beginTransaction();
             $data = $request->all();
             $header = Validator::make($data, [
+                'desc_code' => 'required|string',
                 'description' => 'required|string',
                 'icon' => 'required|string',
                 'class' => 'required|string',
@@ -94,7 +97,7 @@ class MenuController extends Controller
                 'sort' => 'required|integer',
                 'status' => 'nullable|string'
             ]);
-            
+
             if ($header->fails()) {
                 return response()->json([
                     'success' => false,  // Indicate failure
@@ -114,6 +117,7 @@ class MenuController extends Controller
 
             Menu::insert([
                 "transNo" => $transNo,
+                'desc_code' => $data['desc_code'],
                 "description" => $data['description'],
                 'icon' =>$data['icon'],
                 'class'=>$data['class'],
@@ -126,6 +130,7 @@ class MenuController extends Controller
 
             foreach($data['lines'] as $line){
                 $lineValidator = Validator::make($line, [
+                    
                     'description' => 'required|string',
                     'icon' => 'required|string',
                     'class' => 'required|string',
@@ -133,7 +138,6 @@ class MenuController extends Controller
                     'sort' => 'required|integer',
                     'status' => 'nullable|string'
                 ]);
-
                 
             
                 if ($lineValidator->fails()) {
@@ -149,14 +153,15 @@ class MenuController extends Controller
 
                 Submenu::insert([
                     "transNo" => $transNo,
+                    "desc_code" => $data['desc_code'],
                     "description" => $line['description'],
                     'icon' =>$line['icon'],
                     'class'=>$line['class'],
                     'routes' =>$line['routes'],
                     'sort' =>$line['sort'],
                     'status' => $line['status'] ? $line['status'] : 'I',
-                    // 'created_by',
-                    // 'updated_by',
+                    'created_by' => Auth::user()->fullname,
+                    'updated_by'=> Auth::user()->fullname,
                 ]);
             }
                     // Commit the transaction
@@ -172,7 +177,6 @@ class MenuController extends Controller
             DB::rollBack();
             return response()->json(['success'=>false,'message' => $th->getMessage()  ]);
         }
-
     }
 
     /**
@@ -210,6 +214,7 @@ class MenuController extends Controller
 
 // menu.store POST 
 // {
+//     "desc_code" : "top_navigation",
 //     "description" : "Security roles",
 //     "icon" : "icon-sys",
 //     "class" : "class-sys",

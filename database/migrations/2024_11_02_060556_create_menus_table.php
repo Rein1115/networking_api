@@ -11,6 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
+
         Schema::create('menus', function (Blueprint $table) {
             $table->id();
             $table->string('transNo'); 
@@ -25,6 +26,7 @@ return new class extends Migration
             $table->string('updated_by')->nullable();
             $table->timestamps();
         });
+        
     }
 
     /**

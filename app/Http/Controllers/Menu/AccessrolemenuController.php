@@ -17,22 +17,22 @@ class AccessrolemenuController extends Controller
      */
     private $description = "Security roles";
 
-    public function index()
+    public function index(Request $request)
     {   
         $modules = Roleaccessmenu::where('rolecode',Auth::user()->role_code)->get();
         $result = [];
         for ($m = 0; $m < count($modules); $m++) {
-            $menus =  Menu::where('id',$modules[$m]->menus_id) ->where('status', 'A')
+            $menus =  Menu::where('id',$modules[$m]->menus_id) ->where('status', 'A')->where('desc_code',$request->desc_code)
             ->orderBy('sort') 
             ->get();
             for($me = 0; $me<count($menus); $me++){
 
                 $submodule = Roleaccesssubmenu::where([['rolecode',Auth::user()->role_code],['transNo', $modules[$m]->transNo]])->get();
-
                 $sub = [];
                 for($sb = 0 ; $sb<count($submodule); $sb++){
                     $submenus = Submenu::where('id',$submodule[$sb]->submenus_id)
                      ->where('status', 'A')
+                     ->where('desc_code',$request->desc_code)
                     ->orderBy('sort')->get();
                     for($su=0; $su<count($submenus); $su++){
                      
@@ -53,7 +53,6 @@ class AccessrolemenuController extends Controller
                 ]  ;
 
             }
-
         }
         return response()->json($result);
     }
@@ -98,9 +97,6 @@ class AccessrolemenuController extends Controller
         //     }
 
         // }
-
-
-
 
     }
 
