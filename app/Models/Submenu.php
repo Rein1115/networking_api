@@ -11,8 +11,10 @@ class Submenu extends Model
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+
     protected $fillable = [
         'transNo',
+        'desc_code',
         'description',
         'icon',
         'class',
@@ -21,4 +23,6 @@ class Submenu extends Model
         'status',
         'created_by'
     ];
+    
+
 }

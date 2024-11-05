@@ -12,6 +12,7 @@ class Menu extends Model
 
     protected $fillable = [
         'transNo',
+        'desc_code',
         'description',
         'icon',
         'class',
