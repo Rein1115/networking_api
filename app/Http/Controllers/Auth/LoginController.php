@@ -52,8 +52,7 @@ class LoginController extends Controller
                 'user' => $user,
             ]);
         }
-    
-        return response()->json(['success' => false, 'error' => 'Unauthorized']);
+        return response()->json(['success' => false, 'message' => 'The email or password is incorrect. Please check your credentials.']);
     }
 
     public function logout(Request $request)
