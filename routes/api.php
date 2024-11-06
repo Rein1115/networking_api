@@ -23,6 +23,9 @@ use App\Http\Controllers\Menu\MenuController;
 
 // PUBLIC
 Route::post('login',[LoginController::class,'login'])->name('login');
+
+
+
 Route::post('register',[RegisterController::class,'register'])->name('register');
 
 
@@ -32,6 +35,7 @@ Route::middleware(['auth:sanctum','checkstatus'])->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user(); // Return authenticated user information
     });
+    Route::post('logout',[LoginController::class,'logout'])->name('logout');
 
     // User access to the menu depends on their role. GET 
     Route::Resource('accessmenu',AccessrolemenuController::class)->names('accessmenu');
