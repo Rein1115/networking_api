@@ -63,24 +63,24 @@ class AccessrolemenuController extends Controller
    // REVISED CODE
     public function index(Request $request)
     {
-        // Get all the role access menus
+     
         $modules = Roleaccessmenu::where('rolecode', Auth::user()->role_code)->get();
 
-        // Initialize an empty result array
+     
         $result = [];
 
-        // Loop through each module using for loop
+   
         for ($m = 0; $m < count($modules); $m++) {
-            // Get menus associated with this module, ordered by 'sort'
+            
             $menus = Menu::where('id', $modules[$m]->menus_id)
                 ->where('status', 'A')
                 ->where('desc_code', $request->desc_code)
                 ->orderBy('sort')
                 ->get();
 
-            // Loop through each menu using for loop
+          
             for ($me = 0; $me < count($menus); $me++) {
-                // Get submodules associated with the current menu
+                
                 $submodule = Roleaccesssubmenu::where([
                     ['rolecode', Auth::user()->role_code],
                     ['transNo', $modules[$m]->transNo]
@@ -89,16 +89,13 @@ class AccessrolemenuController extends Controller
                 // Initialize an empty submenus array
                 $sub = [];
 
-                // Loop through submodules using for loop
+         
                 for ($sb = 0; $sb < count($submodule); $sb++) {
-                    // Get submenus for this submodule, ordered by 'sort'
                     $submenus = Submenu::where('id', $submodule[$sb]->submenus_id)
                         ->where('status', 'A')
                         ->where('desc_code', $request->desc_code)
                         ->orderBy('sort')
                         ->get();
-
-                    // Add submenus to the $sub array
                     for ($su = 0; $su < count($submenus); $su++) {
                         $sub[] = [
                             "description" => $submenus[$su]->description,
@@ -109,7 +106,7 @@ class AccessrolemenuController extends Controller
                     }
                 }
 
-                // Add the menu and its submenus to the result array
+               
                 $result[] = [
                     "description" => $menus[$me]->description,
                     "icon" => $menus[$me]->icon,
@@ -120,7 +117,7 @@ class AccessrolemenuController extends Controller
             }
         }
 
-        // Sort the result array by 'sort' value
+       
         usort($result, function($a, $b) {
             return $a['sort'] <=> $b['sort'];
         });
