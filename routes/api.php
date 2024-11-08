@@ -51,8 +51,8 @@ Route::middleware(['auth:sanctum','checkstatus'])->group(function () {
     Route::Resource('menu',MenuController::class)->names('menu');
 
     // Security roles
-    // securityrole GET , STORE 
-    Route::Resource('securityrole',SecurityroleController::class)->names('securityrole');
+    // security GET , STORE 
+    Route::Resource('security',SecurityroleController::class)->names('security');
 
     //Role
     // role GET,STORE,UPDATE,SHOW
