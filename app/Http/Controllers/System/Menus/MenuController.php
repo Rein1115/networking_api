@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Menu;
+namespace App\Http\Controllers\System\Menus;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+
 use App\Models\Menu;
 use App\Models\Submenu;
 use Illuminate\Support\Facades\Validator;
@@ -12,20 +13,20 @@ use Illuminate\Support\Facades\Auth;
 
 class MenuController extends Controller
 {
-    /**
+   /**
      * Display a listing of the resource.
      */
 
-    // private $description = "Menu";
+    private $description = "Menus";
 
     public function index(Request $request)
     {
-        // $request->merge(['description' => $this->description]);
-        // $accessResponse = $this->accessmenu($request);
+        $request->merge(['description' => $this->description]);
+        $accessResponse = $this->accessmenu($request);
 
-        // if ($accessResponse !== 1) {
-        //     return response()->json(['success' => false,'message' => 'Authorized']);
-        // }
+        if ($accessResponse !== 1) {
+            return response()->json(['success' => false,'message' => 'Authorized']);
+        }
 
         $menu = Menu::orderBy('sort', 'asc')->get();
         $result = [];
@@ -39,20 +40,22 @@ class MenuController extends Controller
 
                     $sub[$su] = [
                         "id" => $submenu[$su]->id,
+                        "transNo" => $submenu[$su]->transNo,
                         "desccode" => $submenu[$su]->desc_code,
                         "description" => $submenu[$su]->description,
                         "icon" => $submenu[$su]->icon,
-                        "route" => $submenu[$su]->route,
+                        "route" => $submenu[$su]->routes,
                         "sort" => $submenu[$su]->sort
                     ];
                 }
 
                 $result[$m] = [
                     "id" => $menu[$m]->id,
+                    "transNo" => $menu[$m]->transNo,
                     "desccode" => $menu[$m]->desc_code,
                     "description" => $menu[$m]->description,
                     "icon" => $menu[$m]->icon,
-                    "route" => $menu[$m]->route,
+                    "route" => $menu[$m]->routes,
                     "sort" => $menu[$m]->sort,
                     "submenu" => $sub
                 ];

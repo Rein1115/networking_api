@@ -1,133 +1,19 @@
 <?php
 
-namespace App\Http\Controllers\Menu;
+namespace App\Http\Controllers\System\Securityroles;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth; 
-use Illuminate\Support\Facades\Validator;
-use App\Models\Roleaccessmenu;
-use App\Models\Roleaccesssubmenu;
-use App\Models\Submenu;
-use App\Models\Menu;
-use DB;
-class AccessrolemenuController extends Controller
+
+class SecurityroleController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    private $description = "Security roles";
-
-    // ORIGINAL CODE
-    // public function index(Request $request)
-    // {   
-    //     $modules = Roleaccessmenu::where('rolecode',Auth::user()->role_code)->get();
-    //     $result = [];
-    //     for ($m = 0; $m < count($modules); $m++) {
-    //         $menus =  Menu::where('id',$modules[$m]->menus_id) ->where('status', 'A')->where('desc_code',$request->desc_code)
-    //         ->orderBy('sort') 
-    //         ->get();
-    //         for($me = 0; $me<count($menus); $me++){
-
-    //             $submodule = Roleaccesssubmenu::where([['rolecode',Auth::user()->role_code],['transNo', $modules[$m]->transNo]])->get();
-    //             $sub = [];
-    //             for($sb = 0 ; $sb<count($submodule); $sb++){
-    //                 $submenus = Submenu::where('id',$submodule[$sb]->submenus_id)
-    //                  ->where('status', 'A')
-    //                  ->where('desc_code',$request->desc_code)
-    //                 ->orderBy('sort')->get();
-    //                 for($su=0; $su<count($submenus); $su++){
-                     
-    //                     $sub[] = [
-    //                         "description" =>$submenus[$su]->description ,
-    //                         "icon" => $submenus[$su]->icon,
-    //                         "route" => $submenus[$su]->routes,
-    //                         "sort" => $submenus[$su]->sort
-    //                     ];
-    //                 }
-    //             }
-    //             $result[] =[
-    //                 "description" => $menus[$me]->description,
-    //                 "icon" => $menus[$me]->icon,
-    //                 "route" => $menus[$me]->routes,
-    //                 "sort" =>  $menus[$me]->sort,
-    //                 "submenus" => $sub 
-    //             ]  ;
-
-    //         }
-    //     }
-    //     return response()->json($result);
-    // }
-
-
-   // REVISED CODE
-    public function index(Request $request)
+    public function index()
     {
-     
-        $modules = Roleaccessmenu::where('rolecode', Auth::user()->role_code)->get();
-
-     
-        $result = [];
-
-   
-        for ($m = 0; $m < count($modules); $m++) {
-            
-            $menus = Menu::where('id', $modules[$m]->menus_id)
-                ->where('status', 'A')
-                ->where('desc_code', $request->desc_code)
-                ->orderBy('sort')
-                ->get();
-
-          
-            for ($me = 0; $me < count($menus); $me++) {
-                
-                $submodule = Roleaccesssubmenu::where([
-                    ['rolecode', Auth::user()->role_code],
-                    ['transNo', $modules[$m]->transNo]
-                ])->get();
-
-                // Initialize an empty submenus array
-                $sub = [];
-
-         
-                for ($sb = 0; $sb < count($submodule); $sb++) {
-                    $submenus = Submenu::where('id', $submodule[$sb]->submenus_id)
-                        ->where('status', 'A')
-                        ->where('desc_code', $request->desc_code)
-                        ->orderBy('sort')
-                        ->get();
-                    for ($su = 0; $su < count($submenus); $su++) {
-                        $sub[] = [
-                            "description" => $submenus[$su]->description,
-                            "icon" => $submenus[$su]->icon,
-                            "route" => $submenus[$su]->routes,
-                            "sort" => $submenus[$su]->sort
-                        ];
-                    }
-                }
-
-               
-                $result[] = [
-                    "description" => $menus[$me]->description,
-                    "icon" => $menus[$me]->icon,
-                    "route" => $menus[$me]->routes,
-                    "sort" => $menus[$me]->sort,
-                    "submenus" => $sub
-                ];
-            }
-        }
-
-       
-        usort($result, function($a, $b) {
-            return $a['sort'] <=> $b['sort'];
-        });
-
-        // Return the result as a JSON response
-        return response()->json($result);
+        //
     }
-
-
-
 
     /**
      * Show the form for creating a new resource.
@@ -143,7 +29,9 @@ class AccessrolemenuController extends Controller
     public function store(Request $request)
     {
         //
-        try {
+
+         //
+         try {
             DB::beginTransaction();
         
             $data = $request->all();
@@ -219,7 +107,6 @@ class AccessrolemenuController extends Controller
             DB::rollBack();
             return response()->json(['success' => false, 'message' => $th->getMessage()]);
         }
-    
     }
 
     /**
@@ -256,12 +143,7 @@ class AccessrolemenuController extends Controller
 }
 
 
-// accessmenu.index GET 
-// {
-//     "desc_code" : "tnavigation_token"
-// }
-
-// accessmenu.store POST
+// securityrole.store POST
 // [
 //     {
 //         "rolecode": "DEF-MASTERADMIN",

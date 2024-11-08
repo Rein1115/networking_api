@@ -7,9 +7,10 @@ use App\Http\Controllers\Auth\LoginController;
 use  App\Http\Controllers\Auth\RegisterController;
 
 
-use App\Http\Controllers\Menu\AccessrolemenuController;
-use App\Http\Controllers\Menu\MenuController;
+use App\Http\Controllers\Accessrolemenu\AccessrolemenuController;
 
+use App\Http\Controllers\System\Menus\MenuController;
+use App\Http\Controllers\System\Securityroles\SecurityroleController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -43,5 +44,7 @@ Route::middleware(['auth:sanctum','checkstatus'])->group(function () {
     // menu GET , POST 
     Route::Resource('menu',MenuController::class)->names('menu');
 
+    // securityrole GET , POST 
+    Route::Resource('securityrole',SecurityroleController::class)->names('securityrole');
     
 });
