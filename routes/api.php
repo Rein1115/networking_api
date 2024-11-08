@@ -11,6 +11,8 @@ use App\Http\Controllers\Accessrolemenu\AccessrolemenuController;
 
 use App\Http\Controllers\System\Menus\MenuController;
 use App\Http\Controllers\System\Securityroles\SecurityroleController;
+
+use App\Http\Controllers\System\Role\RoleController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -42,13 +44,17 @@ Route::middleware(['auth:sanctum','checkstatus'])->group(function () {
     // User access to the menu depends on their role. GET 
     Route::Resource('accessmenu',AccessrolemenuController::class)->names('accessmenu');
 
-
     // Menus
-    // menu GET , POST 
+    // menu GET , STORE 
     Route::Resource('menu',MenuController::class)->names('menu');
 
     // Security roles
-    // securityrole GET , POST 
+    // securityrole GET , STORE 
     Route::Resource('securityrole',SecurityroleController::class)->names('securityrole');
+
+    //Role
+    // role GET,STORE,UPDATE,SHOW
+    Route::Resource('role',RoleController::class)->names('role');
+
     
 });
