@@ -21,14 +21,20 @@ class RoleController extends Controller
      * Display a listing of the resource.
      */
     
-   
-    public function index()
+     private $description = "Roles";
+    public function index(Request $request)
     {
+        $request->merge(['description' => $this->description]);
+        $accessResponse = $this->accessmenu($request);
+
+        if ($accessResponse !== 1) {
+            return response()->json(['success' => false,'message' => 'Authorized']);
+        }
+
         if(Auth::check()){
-    
             if (Auth::user()->role_code == 'DEF-MASTERADMIN') {
-                $roles = Role::all();
-                return response()->json(['success' => true, 'message' => $roles]);
+                $data = Role::all();
+                return response()->json(['success' => true, 'message' => $data]);
             } else {
                 return response()->json(['success' => false, 'message' => "You have no rights."]);
             }
@@ -94,16 +100,22 @@ class RoleController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Request $request , string $id)
     {
         //
-        if(Auth::check()){
+        $request->merge(['description' => $this->description]);
+        $accessResponse = $this->accessmenu($request);
 
+        if ($accessResponse !== 1) {
+            return response()->json(['success' => false,'message' => 'Authorized']);
+        }
+
+        if(Auth::check()){
 
             if (Auth::user()->role_code == 'DEF-MASTERADMIN') {
                 try {
-                    $role = Role::findOrFail($id);
-                    return response()->json(['success' => true,'message' => $role
+                    $data = Role::findOrFail($id);
+                    return response()->json(['success' => true,'message' => $data
                     ]);
                 } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
                     return response()->json(['success' => false,'message' => 'Role not found.']);
@@ -130,6 +142,14 @@ class RoleController extends Controller
      */
     public function update(Request $request, string $id)
     {
+
+        $request->merge(['description' => $this->description]);
+        $accessResponse = $this->accessmenu($request);
+
+        if ($accessResponse !== 1) {
+            return response()->json(['success' => false,'message' => 'Authorized']);
+        }
+        
         try {
             DB::beginTransaction();
     
@@ -210,8 +230,15 @@ class RoleController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Request $request,string $id)
     {
+        $request->merge(['description' => $this->description]);
+        $accessResponse = $this->accessmenu($request);
+
+        if ($accessResponse !== 1) {
+            return response()->json(['success' => false,'message' => 'Authorized']);
+        }
+
         try {
             DB::beginTransaction();
     
