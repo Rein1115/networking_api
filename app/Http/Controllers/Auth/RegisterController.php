@@ -36,7 +36,7 @@ class RegisterController extends Controller
             }
 
             $cod = User::max('code');
-            $code = empty($trans) ? 701 : $cod + 1;
+            $code = empty($cod) ? 701 : $cod + 1;
 
             // Create the user
             $user = User::create([
