@@ -58,11 +58,6 @@ Route::middleware(['auth:sanctum','checkstatus'])->group(function () {
     // role GET,STORE,UPDATE,SHOW
     Route::Resource('role',RoleController::class)->names('role');
 
-    
-
-
-    
-
     // SELECT2 ALL REQUEST
     Route::post('rolecode',[SelectController::class,'rolecode'])->name('rolecode');
 
