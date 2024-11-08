@@ -12,7 +12,9 @@ use App\Http\Controllers\Accessrolemenu\AccessrolemenuController;
 use App\Http\Controllers\System\Menus\MenuController;
 use App\Http\Controllers\System\Securityroles\SecurityroleController;
 
-use App\Http\Controllers\System\Role\RoleController;
+use App\Http\Controllers\System\Roles\RoleController;
+
+use App\Http\Controllers\Select2\SelectController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -57,4 +59,11 @@ Route::middleware(['auth:sanctum','checkstatus'])->group(function () {
     Route::Resource('role',RoleController::class)->names('role');
 
     
+
+
+    
+
+    // SELECT2 ALL REQUEST
+    Route::post('rolecode',[SelectController::class,'rolecode'])->name('rolecode');
+
 });
