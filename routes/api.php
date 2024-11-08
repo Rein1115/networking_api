@@ -38,12 +38,16 @@ Route::middleware(['auth:sanctum','checkstatus'])->group(function () {
     });
     Route::post('logout',[LoginController::class,'logout'])->name('logout');
 
+    // Accessrolemenu
     // User access to the menu depends on their role. GET 
     Route::Resource('accessmenu',AccessrolemenuController::class)->names('accessmenu');
 
+
+    // Menus
     // menu GET , POST 
     Route::Resource('menu',MenuController::class)->names('menu');
 
+    // Security roles
     // securityrole GET , POST 
     Route::Resource('securityrole',SecurityroleController::class)->names('securityrole');
     
