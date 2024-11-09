@@ -225,68 +225,93 @@ class SecurityroleController extends Controller
 
     public function show(Request $request, string $id)
     {
-        //
-
         $request->merge(['description' => $this->description]);
         $accessResponse = $this->accessmenu($request);
-
-        if ($accessResponse !== 1) {
-            return response()->json(['success' => false,'message' => 'Authorized']);
-        }
-
-        if(Auth::check()){
     
+        if ($accessResponse !== 1) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized']);
+        }
+    
+        if (Auth::check()) {
             if (Auth::user()->role_code == 'DEF-MASTERADMIN') {
-
+                // Fetch all menu items and the related role-based access modules
                 $menu = Menu::all();
                 $modules = Roleaccessmenu::where('rolecode', $id)->get(); // Get the modules for the given role code
                 
                 $result = [];
+    
+                // Iterate over each menu item
                 foreach ($menu as $m) {
-                   
+                    // Check if the menu item has access for the role
                     $access = $modules->contains('menus_id', $m->id) ? true : false;
-                    $submenu = Submenu::where('transNo', $m->transNo)->get(); 
-
-                    $submodule = Roleaccesssubmenu::where('rolecode', $id)->get();
-                
+                    $submenu = Submenu::where('transNo', $m->transNo)->get();  // Get submenus related to this menu
+                    $submodule = Roleaccesssubmenu::where('rolecode', $id)->get(); // Get submodules for this role
+    
                     $sub = [];
+    
+                    // Iterate over submenus
                     foreach ($submenu as $s) {
-                  
                         $saccess = $submodule->contains('submenus_id', $s->id) ? true : false;
-                
+    
                         $sub[] = [
+                            "desc_code" => $s->desc_code,
                             "description" => $s->description,
-                            "submenus_id" =>$s->id,
+                            "submenus_id" => $s->id,
                             "sort" => $s->sort,
                             "access" => $saccess
                         ];
                     }
-                
-                    
+    
+                    // Add the menu item along with its submenus to the result array
                     $result[] = [
+                        "desc_code" => $m->desc_code,
                         "description" => $m->description,
-                        "menus_id" =>$m->id,
+                        "menus_id" => $m->id,
                         "sort" => $m->sort,
                         "access" => $access,
                         "submenu" => $sub,
                     ];
                 }
-                
-                usort($result, function($a, $b) {
-                    return $a['sort'] <=> $b['sort'];
-                });
-                
-                return response()->json($result);
-                
+    
+                // Group the result by 'desc_code' and sort the submenus and menus
+                $grouped = [];
+                foreach ($result as $item) {
+                    // Use 'desc_code' as the key
+                    $grouped[$item['desc_code']][] = $item;
+                }
+    
+                // Format the grouped data to match the desired structure
+                $finalResult = [];
+                foreach ($grouped as $desc_code => $menus) {
+                    // Sort the menus and submenus by their 'sort' value
+                    usort($menus, function ($a, $b) {
+                        return $a['sort'] <=> $b['sort'];
+                    });
+    
+                    // Sort submenus inside each menu item
+                    foreach ($menus as &$menu) {
+                        usort($menu['submenu'], function ($a, $b) {
+                            return $a['sort'] <=> $b['sort'];
+                        });
+                    }
+    
+                    // Push the result into the final result array with 'desc_code' as the key
+                    $finalResult[] = [
+                        'desc_code' => $desc_code,
+                        'datas' => $menus
+                    ];
+                }
+    
+                // Return the grouped result with 'datas' under each 'desc_code'
+                return response()->json($finalResult);
             } else {
                 return response()->json(['success' => false, 'message' => "You have no rights."]);
             }
-        }
-        else{
+        } else {
             return response()->json(['success' => false, 'message' => "Unauthorized"]);
         }
-
     }
+    
 
     /**
      * Show the form for editing the specified resource.
