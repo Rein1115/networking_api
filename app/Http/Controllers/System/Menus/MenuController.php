@@ -21,12 +21,12 @@ class MenuController extends Controller
 
     public function index(Request $request)
     {
-        $request->merge(['description' => $this->description]);
-        $accessResponse = $this->accessmenu($request);
+        // $request->merge(['description' => $this->description]);
+        // $accessResponse = $this->accessmenu($request);
 
-        if ($accessResponse !== 1) {
-            return response()->json(['success' => false,'message' => 'Authorized']);
-        }
+        // if ($accessResponse !== 1) {
+        //     return response()->json(['success' => false,'message' => 'Authorized']);
+        // }
 
         $menu = Menu::orderBy('sort', 'asc')->get();
         $result = [];
