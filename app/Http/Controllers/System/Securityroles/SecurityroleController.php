@@ -255,6 +255,7 @@ class SecurityroleController extends Controller
     
                         $sub[] = [
                             "desc_code" => $s->desc_code,
+                            "transNo" =>  $s->transNo,
                             "description" => $s->description,
                             "submenus_id" => $s->id,
                             "sort" => $s->sort,
@@ -265,6 +266,7 @@ class SecurityroleController extends Controller
                     // Add the menu item along with its submenus to the result array
                     $result[] = [
                         "desc_code" => $m->desc_code,
+                        "transNo" =>  $m->transNo,
                         "description" => $m->description,
                         "menus_id" => $m->id,
                         "sort" => $m->sort,
