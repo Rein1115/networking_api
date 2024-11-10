@@ -144,83 +144,6 @@ class SecurityroleController extends Controller
     /**
      * Display the specified resource.
      */
-    // public function show(Request $request, string $id)
-    // {
-    //     //
-
-    //     $request->merge(['description' => $this->description]);
-    //     $accessResponse = $this->accessmenu($request);
-
-    //     if ($accessResponse !== 1) {
-    //         return response()->json(['success' => false,'message' => 'Authorized']);
-    //     }
-
-    //     if(Auth::check()){
-    
-    //         if (Auth::user()->role_code == 'DEF-MASTERADMIN') {
-    //             $modules = Roleaccessmenu::where('rolecode',$id)->get(); 
-
-    //             $result = [];
-    //             for ($m = 0; $m < count($modules); $m++) {
-                    
-    //                 $menus = Menu::where('id', $modules[$m]->menus_id)
-    //                     ->where('status', 'A')
-    //                     ->orderBy('sort')
-    //                     ->get();
-    
-                
-    //                 for ($me = 0; $me < count($menus); $me++) {
-                        
-    //                     $submodule = Roleaccesssubmenu::where([
-    //                         ['rolecode', $id],
-    //                         ['transNo', $modules[$m]->transNo]
-    //                     ])->get();
-    
-    //                     // Initialize an empty submenus array
-    //                     $sub = [];
-    
-                
-    //                     for ($sb = 0; $sb < count($submodule); $sb++) {
-    //                         $submenus = Submenu::where('id', $submodule[$sb]->submenus_id)
-    //                             ->where('status', 'A')
-    //                             ->orderBy('sort')
-    //                             ->get();
-    //                         for ($su = 0; $su < count($submenus); $su++) {
-    //                             $sub[] = [
-    //                                 "description" => $submenus[$su]->description,
-    //                                 "icon" => $submenus[$su]->icon,
-    //                                 "route" => $submenus[$su]->routes,
-    //                                 "sort" => $submenus[$su]->sort
-    //                             ];
-    //                         }
-    //                     }
-    
-                    
-    //                     $result[] = [
-    //                         "description" => $menus[$me]->description,
-    //                         "icon" => $menus[$me]->icon,
-    //                         "route" => $menus[$me]->routes,
-    //                         "sort" => $menus[$me]->sort,
-    //                         "submenus" => $sub
-    //                     ];
-    //                 }
-    //             }
-    
-            
-    //             usort($result, function($a, $b) {
-    //                 return $a['sort'] <=> $b['sort'];
-    //             });
-    
-    //             return response()->json($result);
-    //         } else {
-    //             return response()->json(['success' => false, 'message' => "You have no rights."]);
-    //         }
-    //     }
-    //     else{
-    //         return response()->json(['success' => false, 'message' => "Unauthorized"]);
-    //     }
-
-    // }
 
 
     public function show(Request $request, string $id)
@@ -274,7 +197,7 @@ class SecurityroleController extends Controller
                         "submenu" => $sub,
                     ];
                 }
-    
+
                 // Group the result by 'desc_code' and sort the submenus and menus
                 $grouped = [];
                 foreach ($result as $item) {
