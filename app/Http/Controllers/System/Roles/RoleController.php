@@ -28,7 +28,7 @@ class RoleController extends Controller
         $accessResponse = $this->accessmenu($request);
 
         if ($accessResponse !== 1) {
-            return response()->json(['success' => false,'message' => 'Authorized']);
+            return response()->json(['success' => false,'message' => 'Unauthorized']);
         }
 
         if(Auth::check()){
@@ -59,41 +59,59 @@ class RoleController extends Controller
     {
         // 
 
-        try {
-            DB::beginTransaction();
-        
-            $validator = Validator::make($request->all(), [
-                "rolecode" => 'required|string',
-                "description" => 'required|string'
-            ]);
-        
-            if ($validator->fails()) {
-                DB::rollBack();
-                return response()->json([
-                    'success' => false,
-                    'message' => $validator->errors()
-                ]);
-            }
+        $request->merge(['description' => $this->description]);
+        $accessResponse = $this->accessmenu($request);
 
-            $exist = Role::where('rolecode', $request->rolecode)->exists();
-            if ($exist) {
-                DB::rollBack();
-                return response()->json(['success' => false, 'message' => "Role code already exists."]);
+        if ($accessResponse !== 1) {
+            return response()->json(['success' => false,'message' => 'Unauthorized']);
+        }
+
+        if(Auth::check()){
+            if (Auth::user()->role_code == 'DEF-MASTERADMIN') {
+                try {
+                    DB::beginTransaction();
+                
+                    $validator = Validator::make($request->all(), [
+                        "rolecode" => 'required|string',
+                        "description" => 'required|string'
+                    ]);
+                
+                    if ($validator->fails()) {
+                        DB::rollBack();
+                        return response()->json([
+                            'success' => false,
+                            'message' => $validator->errors()
+                        ]);
+                    }
+        
+                    $exist = Role::where('rolecode', $request->rolecode)->exists();
+                    if ($exist) {
+                        DB::rollBack();
+                        return response()->json(['success' => false, 'message' => "Role code already exists."]);
+                    }
+            
+                    Role::create([
+                        "rolecode" => $request->rolecode,
+                        "description" => $request->description,
+                        "created_by" => Auth::user()->fullname
+                    ]);
+                
+                    DB::commit();
+                    return response()->json(['success' => true, 'message' => "Role code inserted successfully."]);
+                
+                } catch (\Throwable $th) {
+                    DB::rollBack();
+                    return response()->json(['success' => false, 'message' => $th->getMessage()]);
+                } 
+            } else {
+                return response()->json(['success' => false, 'message' => "You have no rights."]);
             }
-    
-            Role::create([
-                "rolecode" => $request->rolecode,
-                "description" => $request->description,
-                "created_by" => Auth::user()->fullname
-            ]);
+        }
+        else{
+            return response()->json(['success' => false, 'message' => "Unauthorized"]);
+        }
+
         
-            DB::commit();
-            return response()->json(['success' => true, 'message' => "Role code inserted successfully."]);
-        
-        } catch (\Throwable $th) {
-            DB::rollBack();
-            return response()->json(['success' => false, 'message' => $th->getMessage()]);
-        } 
 
     }
 
@@ -107,7 +125,7 @@ class RoleController extends Controller
         $accessResponse = $this->accessmenu($request);
 
         if ($accessResponse !== 1) {
-            return response()->json(['success' => false,'message' => 'Authorized']);
+            return response()->json(['success' => false,'message' => 'Unauthorized']);
         }
 
         if(Auth::check()){
@@ -149,81 +167,84 @@ class RoleController extends Controller
         if ($accessResponse !== 1) {
             return response()->json(['success' => false,'message' => 'Authorized']);
         }
+        if (Auth::user()->role_code == 'DEF-MASTERADMIN') {
+            try {
+                DB::beginTransaction();
         
-        try {
-            DB::beginTransaction();
-    
-            // Validate the request data
-            $validator = Validator::make($request->all(), [
-                "rolecode" => 'required|string',
-                "description" => 'required|string'
-            ]);
-    
-            if ($validator->fails()) {
-                DB::rollBack();
-                return response()->json([
-                    'success' => false,
-                    'message' => $validator->errors()
+                // Validate the request data
+                $validator = Validator::make($request->all(), [
+                    "rolecode" => 'required|string',
+                    "description" => 'required|string'
                 ]);
-            }
-    
-            // Fetch the role to be updated
-            $role = Role::findOrFail($id);
-    
-            // Check for associations before updating
-            $usersCount = User::where('role_code', $role->rolecode)->count();
-            $roleaccessmenu = Roleaccessmenu::where('rolecode', $role->rolecode)->count();
-            $roleaccesssubmenu = Roleaccesssubmenu::where('rolecode', $role->rolecode)->count();
-    
-            // Check if there are any associated users or menu items
-            if ($roleaccessmenu > 0) {
-                DB::rollBack();
-                return response()->json([
-                    'success' => false,
-                    'message' => "Cannot update role. {$roleaccessmenu} role access menus are associated with this role."
+        
+                if ($validator->fails()) {
+                    DB::rollBack();
+                    return response()->json([
+                        'success' => false,
+                        'message' => $validator->errors()
+                    ]);
+                }
+        
+                // Fetch the role to be updated
+                $role = Role::findOrFail($id);
+        
+                // Check for associations before updating
+                $usersCount = User::where('role_code', $role->rolecode)->count();
+                $roleaccessmenu = Roleaccessmenu::where('rolecode', $role->rolecode)->count();
+                $roleaccesssubmenu = Roleaccesssubmenu::where('rolecode', $role->rolecode)->count();
+        
+                // Check if there are any associated users or menu items
+                if ($roleaccessmenu > 0) {
+                    DB::rollBack();
+                    return response()->json([
+                        'success' => false,
+                        'message' => "Cannot update role. {$roleaccessmenu} role access menus are associated with this role."
+                    ]);
+                }
+        
+                if ($roleaccesssubmenu > 0) {
+                    DB::rollBack();
+                    return response()->json([
+                        'success' => false,
+                        'message' => "Cannot update role. {$roleaccesssubmenu} role access submenus are associated with this role."
+                    ]);
+                }
+        
+                if ($usersCount > 0) {
+                    DB::rollBack();
+                    return response()->json([
+                        'success' => false,
+                        'message' => "Cannot update role. {$usersCount} users are associated with this role."
+                    ]);
+                }
+        
+                // Check if the role code already exists for another role
+                $exist = Role::where('rolecode', $request->rolecode)
+                            ->where('id', '!=', $id)
+                            ->exists();
+        
+                if ($exist) {
+                    DB::rollBack();
+                    return response()->json(['success' => false, 'message' => "Role code already exists."]);
+                }
+        
+                // Update the role
+                $role->update([
+                    "rolecode" => $request->rolecode,
+                    "description" => $request->description,
+                    "updated_by" => Auth::user()->fullname
                 ]);
-            }
-    
-            if ($roleaccesssubmenu > 0) {
+        
+                DB::commit();
+                return response()->json(['success' => true, 'message' => "Role updated successfully."]);
+        
+            } catch (\Throwable $th) {
                 DB::rollBack();
-                return response()->json([
-                    'success' => false,
-                    'message' => "Cannot update role. {$roleaccesssubmenu} role access submenus are associated with this role."
-                ]);
+                return response()->json(['success' => false, 'message' => $th->getMessage()]);
             }
-    
-            if ($usersCount > 0) {
-                DB::rollBack();
-                return response()->json([
-                    'success' => false,
-                    'message' => "Cannot update role. {$usersCount} users are associated with this role."
-                ]);
-            }
-    
-            // Check if the role code already exists for another role
-            $exist = Role::where('rolecode', $request->rolecode)
-                        ->where('id', '!=', $id)
-                        ->exists();
-    
-            if ($exist) {
-                DB::rollBack();
-                return response()->json(['success' => false, 'message' => "Role code already exists."]);
-            }
-    
-            // Update the role
-            $role->update([
-                "rolecode" => $request->rolecode,
-                "description" => $request->description,
-                "updated_by" => Auth::user()->fullname
-            ]);
-    
-            DB::commit();
-            return response()->json(['success' => true, 'message' => "Role updated successfully."]);
-    
-        } catch (\Throwable $th) {
-            DB::rollBack();
-            return response()->json(['success' => false, 'message' => $th->getMessage()]);
-        }
+        } else {
+            return response()->json(['success' => false, 'message' => "You have no rights."]);
+        } 
     }
     
 
@@ -236,58 +257,64 @@ class RoleController extends Controller
         $accessResponse = $this->accessmenu($request);
 
         if ($accessResponse !== 1) {
-            return response()->json(['success' => false,'message' => 'Authorized']);
+            return response()->json(['success' => false,'message' => 'Unauthorized']);
         }
 
-        try {
-            DB::beginTransaction();
+
+
+        if (Auth::user()->role_code == 'DEF-MASTERADMIN') {
+            try {
+                DB::beginTransaction();
+        
+                $role = Role::where('id', $id)->first(); 
+        
+                if ($role) {
+                    $usersCount = User::where('role_code', $role->rolecode)->count();
+                    $roleaccessmenu = Roleaccessmenu::where('rolecode',$role->rolecode)->count();
+                    $roleaccesssubmenu = Roleaccesssubmenu::where('rolecode',$role->rolecode)->count();
     
-            $role = Role::where('id', $id)->first(); 
+                    if ($roleaccessmenu > 0) {
+                        DB::rollBack(); 
+                        return response()->json([
+                            'success' => false,
+                            'message' => "Cannot delete role. {$usersCount} roleaccessmenu are associated with this role."
+                        ]);
+                    }
     
-            if ($role) {
-                $usersCount = User::where('role_code', $role->rolecode)->count();
-                $roleaccessmenu = Roleaccessmenu::where('rolecode',$role->rolecode)->count();
-                $roleaccesssubmenu = Roleaccesssubmenu::where('rolecode',$role->rolecode)->count();
-
-                if ($roleaccessmenu > 0) {
-                    DB::rollBack(); 
+                    if ($roleaccesssubmenu > 0) {
+                        DB::rollBack(); 
+                        return response()->json([
+                            'success' => false,
+                            'message' => "Cannot delete role. {$usersCount} roleaccesssubmenu are associated with this role."
+                        ]);
+                    }
+    
+                    if ($usersCount > 0) {
+                        DB::rollBack(); 
+                        return response()->json([
+                            'success' => false,
+                            'message' => "Cannot delete role. {$usersCount} users are associated with this role."
+                        ]);
+                    }
+                    
+                    $role->delete();
+                    DB::commit();
+    
                     return response()->json([
-                        'success' => false,
-                        'message' => "Cannot delete role. {$usersCount} roleaccessmenu are associated with this role."
+                        'success' => true,
+                        'message' => "Role deleted successfully."
                     ]);
+                } else {
+                    DB::rollBack(); // Rollback if role is not found
+                    return response()->json(['success' => false, 'message' => 'Role not found.']);
                 }
-
-                if ($roleaccesssubmenu > 0) {
-                    DB::rollBack(); 
-                    return response()->json([
-                        'success' => false,
-                        'message' => "Cannot delete role. {$usersCount} roleaccesssubmenu are associated with this role."
-                    ]);
-                }
-
-                if ($usersCount > 0) {
-                    DB::rollBack(); 
-                    return response()->json([
-                        'success' => false,
-                        'message' => "Cannot delete role. {$usersCount} users are associated with this role."
-                    ]);
-                }
-                
-                $role->delete();
-                DB::commit();
-
-                return response()->json([
-                    'success' => true,
-                    'message' => "Role deleted successfully."
-                ]);
-            } else {
-                DB::rollBack(); // Rollback if role is not found
-                return response()->json(['success' => false, 'message' => 'Role not found.']);
+        
+            } catch (\Throwable $th) {
+                DB::rollBack(); // Rollback on any error
+                return response()->json(['success' => false, 'message' => $th->getMessage()]);
             }
-    
-        } catch (\Throwable $th) {
-            DB::rollBack(); // Rollback on any error
-            return response()->json(['success' => false, 'message' => $th->getMessage()]);
-        }
+        }else {
+            return response()->json(['success' => false, 'message' => "You have no rights."]);
+        } 
     }
 }

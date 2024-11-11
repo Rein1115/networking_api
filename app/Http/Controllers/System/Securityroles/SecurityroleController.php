@@ -25,7 +25,7 @@ class SecurityroleController extends Controller
         $accessResponse = $this->accessmenu($request);
 
         if ($accessResponse !== 1) {
-            return response()->json(['success' => false,'message' => 'Authorized']);
+            return response()->json(['success' => false,'message' => 'Unauthorized']);
         }
         
         if(Auth::check()){
@@ -60,7 +60,7 @@ class SecurityroleController extends Controller
          $accessResponse = $this->accessmenu($request);
  
          if ($accessResponse !== 1) {
-             return response()->json(['success' => false,'message' => 'Authorized']);
+             return response()->json(['success' => false,'message' => 'Unauthorized']);
          }
          
          try {

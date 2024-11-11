@@ -21,12 +21,12 @@ class MenuController extends Controller
 
     public function index(Request $request)
     {
-        // $request->merge(['description' => $this->description]);
-        // $accessResponse = $this->accessmenu($request);
+        $request->merge(['description' => $this->description]);
+        $accessResponse = $this->accessmenu($request);
 
-        // if ($accessResponse !== 1) {
-        //     return response()->json(['success' => false,'message' => 'Authorized']);
-        // }
+        if ($accessResponse !== 1) {
+            return response()->json(['success' => false,'message' => 'Unauthorized']);
+        }
 
         $menu = Menu::orderBy('sort', 'asc')->get();
         $result = [];
@@ -81,12 +81,12 @@ class MenuController extends Controller
     public function store(Request $request)
     {
         // 
-        // $request->merge(['description' => $this->description]);
-        // $accessResponse = $this->accessmenu($request);
+        $request->merge(['description' => $this->description]);
+        $accessResponse = $this->accessmenu($request);
 
-        // if ($accessResponse !== 1) {
-        //     return response()->json(['success' => false, 'message' => 'Authorized']);
-        // }
+        if ($accessResponse !== 1) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized']);
+        }
 
         try {
             DB::beginTransaction();
