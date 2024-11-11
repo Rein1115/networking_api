@@ -63,82 +63,87 @@ class SecurityroleController extends Controller
              return response()->json(['success' => false,'message' => 'Unauthorized']);
          }
          
-         try {
-            DB::beginTransaction();
-        
-            $data = $request->all();
+         if (Auth::user()->role_code == 'DEF-MASTERADMIN') {
+            try {
+                DB::beginTransaction();
             
-
-            foreach ($data as $header) {
-                $trans = Roleaccessmenu::max('transNo');
-                $transNo = empty($trans) ? 1 : $trans + 1;    
-                // Validate header data
-                $head = Validator::make($header, [
-                    'rolecode' => 'required|string',
-                    'menus_id' => 'required|numeric'
-                ]);
-        
-                if ($head->fails()) {
-                    // Return validation errors and rollback
-                    return response()->json([
-                        'success' => false,
-                        'message' => $head->errors()
-                    ], 422); 
-                }
-        
-                // Insert header data
-                Roleaccessmenu::insert([
-                    "rolecode" => $header['rolecode'],
-                    "transNo" => $transNo,
-                    "menus_id" => $header['menus_id'],
-                    "created_by" => Auth::user()->fullname,
-                    "updated_by" => Auth::user()->fullname
-                ]);
-        
-                // Check if `lines` exists, is an array, and contains at least one valid `submenus_id`
-                if (!empty($header['lines']) && is_array($header['lines'])) {
-                    foreach ($header['lines'] as $line) {
-                        // Only process lines if `submenus_id` is present
-                        if (!empty($line['submenus_id'])) {
-                            // Ensure `rolecode` matches `header['rolecode']` if `rolecode` is missing in the line
-                            $line['rolecode'] = $line['rolecode'] ?? $header['rolecode'];
-        
-                            // Validate line data
-                            $l = Validator::make($line, [
-                                "submenus_id" => 'required|numeric'
-                            ]);
-        
-                            if ($l->fails()) {
-                                // Return validation errors and rollback
-                                DB::rollBack();
-                                return response()->json([
-                                    'success' => false,
-                                    'message' => $l->errors()
-                                ], 422);
+                $data = $request->all();
+                
+    
+                foreach ($data as $header) {
+                    $trans = Roleaccessmenu::max('transNo');
+                    $transNo = empty($trans) ? 1 : $trans + 1;    
+                    // Validate header data
+                    $head = Validator::make($header, [
+                        'rolecode' => 'required|string',
+                        'menus_id' => 'required|numeric'
+                    ]);
+            
+                    if ($head->fails()) {
+                        // Return validation errors and rollback
+                        return response()->json([
+                            'success' => false,
+                            'message' => $head->errors()
+                        ], 422); 
+                    }
+            
+                    // Insert header data
+                    Roleaccessmenu::insert([
+                        "rolecode" => $header['rolecode'],
+                        "transNo" => $transNo,
+                        "menus_id" => $header['menus_id'],
+                        "created_by" => Auth::user()->fullname,
+                        "updated_by" => Auth::user()->fullname
+                    ]);
+            
+                    // Check if `lines` exists, is an array, and contains at least one valid `submenus_id`
+                    if (!empty($header['lines']) && is_array($header['lines'])) {
+                        foreach ($header['lines'] as $line) {
+                            // Only process lines if `submenus_id` is present
+                            if (!empty($line['submenus_id'])) {
+                                // Ensure `rolecode` matches `header['rolecode']` if `rolecode` is missing in the line
+                                $line['rolecode'] = $line['rolecode'] ?? $header['rolecode'];
+            
+                                // Validate line data
+                                $l = Validator::make($line, [
+                                    "submenus_id" => 'required|numeric'
+                                ]);
+            
+                                if ($l->fails()) {
+                                    // Return validation errors and rollback
+                                    DB::rollBack();
+                                    return response()->json([
+                                        'success' => false,
+                                        'message' => $l->errors()
+                                    ], 422);
+                                }
+            
+                                // Insert line data
+                                Roleaccesssubmenu::insert([
+                                    "rolecode" => $line['rolecode'],
+                                    "transNo" => $transNo,
+                                    "submenus_id" => $line['submenus_id'],
+                                    "created_by" => Auth::user()->fullname,
+                                    "updated_by" => Auth::user()->fullname
+                                ]);
                             }
-        
-                            // Insert line data
-                            Roleaccesssubmenu::insert([
-                                "rolecode" => $line['rolecode'],
-                                "transNo" => $transNo,
-                                "submenus_id" => $line['submenus_id'],
-                                "created_by" => Auth::user()->fullname,
-                                "updated_by" => Auth::user()->fullname
-                            ]);
                         }
                     }
-                }
-            }       
-                    
-            // Commit transaction if all inserts succeed
-            DB::commit();
-            return response()->json(['success' => true, 'message' => 'Data inserted successfully']);
-            
-        } catch (\Throwable $th) {
-            // Rollback transaction on error
-            DB::rollBack();
-            return response()->json(['success' => false, 'message' => $th->getMessage()]);
+                }       
+                        
+                // Commit transaction if all inserts succeed
+                DB::commit();
+                return response()->json(['success' => true, 'message' => 'Data inserted successfully']);
+                
+            } catch (\Throwable $th) {
+                // Rollback transaction on error
+                DB::rollBack();
+                return response()->json(['success' => false, 'message' => $th->getMessage()]);
+            }
+         }else {
+            return response()->json(['success' => false, 'message' => "Unauthorized"]);
         }
+        
     }
 
     /**
