@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Auth\LoginController;
 use  App\Http\Controllers\Auth\RegisterController;
-
+use  App\Http\Controllers\Auth\ForgetpasswordController;
 
 use App\Http\Controllers\Accessrolemenu\AccessrolemenuController;
 
@@ -28,9 +28,7 @@ use App\Http\Controllers\Select2\SelectController;
 
 // PUBLIC
 Route::post('login',[LoginController::class,'login'])->name('login');
-
-
-
+Route::post('forgetpassword',[ForgetpasswordController::class,'forgetpassword'])->name('forgetpassword');
 Route::post('register',[RegisterController::class,'register'])->name('register');
 
 
