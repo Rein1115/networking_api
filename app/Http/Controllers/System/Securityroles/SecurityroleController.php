@@ -25,7 +25,7 @@ class SecurityroleController extends Controller
         $accessResponse = $this->accessmenu($request);
 
         if ($accessResponse !== 1) {
-            return response()->json(['success' => false,'message' => 'Unauthorized']);
+            return response()->json(['success' => false,'message' => 'Authorized']);
         }
         
         if(Auth::check()){
@@ -53,113 +53,186 @@ class SecurityroleController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-        //
+   
+     public function store(Request $request)
+     {
          $request->merge(['description' => $this->description]);
          $accessResponse = $this->accessmenu($request);
- 
+     
          if ($accessResponse !== 1) {
-             return response()->json(['success' => false,'message' => 'Unauthorized']);
+             return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
          }
-         
-         if (Auth::user()->role_code == 'DEF-MASTERADMIN') {
-            try {
-                DB::beginTransaction();
-            
-                $data = $request->all();
+     
+         try {
+             DB::beginTransaction();
+             $data = $request->all();
+             foreach ($data['header'] as $header) {
+     
+                 $trans = Roleaccessmenu::max('transNo');
+                 $transNo = empty($trans) ? 1 : $trans + 1;
+     
+                 $head = Validator::make($header, [
+                     'rolecode' => 'required|string',
+                     'menus_id' => 'required|numeric'
+                 ]);
+     
+                 if ($head->fails()) {
+                     return response()->json(['success' => false, 'message' => $head->errors()], 422);
+                 }
                 
-    
-                foreach ($data as $header) {
-                    $trans = Roleaccessmenu::max('transNo');
-                    $transNo = empty($trans) ? 1 : $trans + 1;    
-                    // Validate header data
-                    $head = Validator::make($header, [
-                        'rolecode' => 'required|string',
-                        'menus_id' => 'required|numeric'
-                    ]);
-            
-                    if ($head->fails()) {
-                        // Return validation errors and rollback
-                        return response()->json([
-                            'success' => false,
-                            'message' => $head->errors()
-                        ], 422); 
-                    }
-            
-                    // Insert header data
-                    Roleaccessmenu::insert([
-                        "rolecode" => $header['rolecode'],
-                        "transNo" => $transNo,
-                        "menus_id" => $header['menus_id'],
-                        "created_by" => Auth::user()->fullname,
-                        "updated_by" => Auth::user()->fullname
-                    ]);
-            
-                    // Check if `lines` exists, is an array, and contains at least one valid `submenus_id`
-                    if (!empty($header['lines']) && is_array($header['lines'])) {
-                        foreach ($header['lines'] as $line) {
-                            // Only process lines if `submenus_id` is present
-                            if (!empty($line['submenus_id'])) {
-                                // Ensure `rolecode` matches `header['rolecode']` if `rolecode` is missing in the line
-                                $line['rolecode'] = $line['rolecode'] ?? $header['rolecode'];
-            
-                                // Validate line data
-                                $l = Validator::make($line, [
-                                    "submenus_id" => 'required|numeric'
-                                ]);
-            
-                                if ($l->fails()) {
-                                    // Return validation errors and rollback
-                                    DB::rollBack();
-                                    return response()->json([
-                                        'success' => false,
-                                        'message' => $l->errors()
-                                    ], 422);
-                                }
-            
-                                // Insert line data
-                                Roleaccesssubmenu::insert([
-                                    "rolecode" => $line['rolecode'],
-                                    "transNo" => $transNo,
-                                    "submenus_id" => $line['submenus_id'],
-                                    "created_by" => Auth::user()->fullname,
-                                    "updated_by" => Auth::user()->fullname
-                                ]);
-                            }
-                        }
-                    }
-                }       
-                        
-                // Commit transaction if all inserts succeed
-                DB::commit();
-                return response()->json(['success' => true, 'message' => 'Data inserted successfully']);
-                
-            } catch (\Throwable $th) {
-                // Rollback transaction on error
-                DB::rollBack();
-                return response()->json(['success' => false, 'message' => $th->getMessage()]);
-            }
-         }else {
-            return response()->json(['success' => false, 'message' => "Unauthorized"]);
-        }
-        
-    }
+                 Roleaccessmenu::where('rolecode',$header['rolecode']);
+                 Roleaccesssubmenu::where('rolecode',$header['rolecode']);
 
+                 Roleaccessmenu::insert([
+                     "rolecode" => $header['rolecode'],
+                     "transNo" => $transNo,
+                     "menus_id" => $header['menus_id'],
+                     "created_by" => Auth::user()->fullname,
+                     "updated_by" => Auth::user()->fullname
+                 ]);
+     
+                 if (!empty($header['lines']) && is_array($header['lines'])) {
+                     foreach ($header['lines'] as $line) {
+     
+                         if (!empty($line['submenus_id'])) {
+                             $line['rolecode'] = $line['rolecode'] ?? $header['rolecode'];
+     
+                             $l = Validator::make((array) $line, [
+                                 "submenus_id" => 'required|numeric'
+                             ]);
+     
+                             if ($l->fails()) {
+                                 DB::rollBack();
+                                 return response()->json(['success' => false, 'message' => $l->errors()], 422);
+                             }
+     
+                             Roleaccesssubmenu::insert([
+                                 "rolecode" => $line['rolecode'],
+                                 "transNo" => $transNo,
+                                 "submenus_id" => $line['submenus_id'],
+                                 "created_by" => Auth::user()->fullname,
+                                 "updated_by" => Auth::user()->fullname
+                             ]);
+                         }
+                     }
+                 }
+             }
+     
+             DB::commit();
+             return response()->json(['success' => true, 'message' => 'Data inserted successfully']);
+     
+         } catch (\Throwable $th) {
+             DB::rollBack();
+             return response()->json(['success' => false, 'message' => $th->getMessage()]);
+         }
+     }
+     
+    
     /**
      * Display the specified resource.
      */
 
 
+    // public function show(Request $request, string $id)
+    // {
+    //     $request->merge(['description' => $this->description]);
+    //     $accessResponse = $this->accessmenu($request);
+    
+    //     if ($accessResponse !== 1) {
+    //         return response()->json(['success' => false, 'message' => 'Unauthorized']);
+    //     }
+    
+    //     if (Auth::check()) {
+    //         if (Auth::user()->role_code == 'DEF-MASTERADMIN') {
+    //             // Fetch all menu items and the related role-based access modules
+    //             $menu = Menu::all();
+    //             $modules = Roleaccessmenu::where('rolecode', $id)->get(); // Get the modules for the given role code
+                
+    //             $result = [];
+    
+    //             // Iterate over each menu item
+    //             foreach ($menu as $m) {
+    //                 // Check if the menu item has access for the role
+    //                 $access = $modules->contains('menus_id', $m->id) ? true : false;
+    //                 $submenu = Submenu::where('transNo', $m->transNo)->get();  // Get submenus related to this menu
+    //                 $submodule = Roleaccesssubmenu::where('rolecode', $id)->get(); // Get submodules for this role
+    
+    //                 $sub = [];
+    
+    //                 // Iterate over submenus
+    //                 foreach ($submenu as $s) {
+    //                     $saccess = $submodule->contains('submenus_id', $s->id) ? true : false;
+    
+    //                     $sub[] = [
+    //                         "desc_code" => $s->desc_code,
+    //                         "transNo" =>  $s->transNo,
+    //                         "description" => $s->description,
+    //                         "submenus_id" => $s->id,
+    //                         "sort" => $s->sort,
+    //                         "access" => $saccess
+    //                     ];
+    //                 }
+    
+    //                 // Add the menu item along with its submenus to the result array
+    //                 $result[] = [
+    //                     "desc_code" => $m->desc_code,
+    //                     "transNo" =>  $m->transNo,
+    //                     "description" => $m->description,
+    //                     "menus_id" => $m->id,
+    //                     "sort" => $m->sort,
+    //                     "access" => $access,
+    //                     "submenu" => $sub,
+    //                 ];
+    //             }
+
+    //             // Group the result by 'desc_code' and sort the submenus and menus
+    //             $grouped = [];
+    //             foreach ($result as $item) {
+    //                 // Use 'desc_code' as the key
+    //                 $grouped[$item['desc_code']][] = $item;
+    //             }
+    
+    //             // Format the grouped data to match the desired structure
+    //             $finalResult = [];
+    //             foreach ($grouped as $desc_code => $menus) {
+    //                 // Sort the menus and submenus by their 'sort' value
+    //                 usort($menus, function ($a, $b) {
+    //                     return $a['sort'] <=> $b['sort'];
+    //                 });
+    
+    //                 // Sort submenus inside each menu item
+    //                 foreach ($menus as &$menu) {
+    //                     usort($menu['submenu'], function ($a, $b) {
+    //                         return $a['sort'] <=> $b['sort'];
+    //                     });
+    //                 }
+    
+    //                 // Push the result into the final result array with 'desc_code' as the key
+    //                 $finalResult[] = [
+    //                     'desc_code' => $desc_code,
+    //                     'datas' => $menus
+    //                 ];
+    //             }
+    
+    //             // Return the grouped result with 'datas' under each 'desc_code'
+    //             return response()->json($finalResult);
+    //         } else {
+    //             return response()->json(['success' => false, 'message' => "You have no rights."]);
+    //         }
+    //     } else {
+    //         return response()->json(['success' => false, 'message' => "Unauthorized"]);
+    //     }
+    // }
+
     public function show(Request $request, string $id)
     {
         $request->merge(['description' => $this->description]);
         $accessResponse = $this->accessmenu($request);
-    
+
         if ($accessResponse !== 1) {
             return response()->json(['success' => false, 'message' => 'Unauthorized']);
         }
-    
+
         if (Auth::check()) {
             if (Auth::user()->role_code == 'DEF-MASTERADMIN') {
                 // Fetch all menu items and the related role-based access modules
@@ -167,20 +240,20 @@ class SecurityroleController extends Controller
                 $modules = Roleaccessmenu::where('rolecode', $id)->get(); // Get the modules for the given role code
                 
                 $result = [];
-    
+
                 // Iterate over each menu item
                 foreach ($menu as $m) {
                     // Check if the menu item has access for the role
-                    $access = $modules->contains('menus_id', $m->id) ? true : false;
+                    $access = $modules->contains('menus_id', $m->id);
                     $submenu = Submenu::where('transNo', $m->transNo)->get();  // Get submenus related to this menu
                     $submodule = Roleaccesssubmenu::where('rolecode', $id)->get(); // Get submodules for this role
-    
+
                     $sub = [];
-    
+
                     // Iterate over submenus
                     foreach ($submenu as $s) {
-                        $saccess = $submodule->contains('submenus_id', $s->id) ? true : false;
-    
+                        $saccess = $submodule->contains('submenus_id', $s->id);
+
                         $sub[] = [
                             "desc_code" => $s->desc_code,
                             "transNo" =>  $s->transNo,
@@ -190,9 +263,9 @@ class SecurityroleController extends Controller
                             "access" => $saccess
                         ];
                     }
-    
-                    // Add the menu item along with its submenus to the result array
-                    $result[] = [
+
+                    // Add the menu item along with its submenus to the result array under desc_code
+                    $result[$m->desc_code][] = [
                         "desc_code" => $m->desc_code,
                         "transNo" =>  $m->transNo,
                         "description" => $m->description,
@@ -203,35 +276,28 @@ class SecurityroleController extends Controller
                     ];
                 }
 
-                // Group the result by 'desc_code' and sort the submenus and menus
-                $grouped = [];
-                foreach ($result as $item) {
-                    // Use 'desc_code' as the key
-                    $grouped[$item['desc_code']][] = $item;
-                }
-    
-                // Format the grouped data to match the desired structure
+                // Format the grouped data to match the desired structure by sorting menus and submenus within each desc_code group
                 $finalResult = [];
-                foreach ($grouped as $desc_code => $menus) {
+                foreach ($result as $desc_code => $menus) {
                     // Sort the menus and submenus by their 'sort' value
                     usort($menus, function ($a, $b) {
                         return $a['sort'] <=> $b['sort'];
                     });
-    
+
                     // Sort submenus inside each menu item
                     foreach ($menus as &$menu) {
                         usort($menu['submenu'], function ($a, $b) {
                             return $a['sort'] <=> $b['sort'];
                         });
                     }
-    
+
                     // Push the result into the final result array with 'desc_code' as the key
                     $finalResult[] = [
                         'desc_code' => $desc_code,
                         'datas' => $menus
                     ];
                 }
-    
+
                 // Return the grouped result with 'datas' under each 'desc_code'
                 return response()->json($finalResult);
             } else {
@@ -241,6 +307,7 @@ class SecurityroleController extends Controller
             return response()->json(['success' => false, 'message' => "Unauthorized"]);
         }
     }
+
     
 
     /**
@@ -273,28 +340,33 @@ class SecurityroleController extends Controller
 
 
 // security POST
-// [
-//     {
-//         "rolecode": "DEF-MASTERADMIN",
-//         "menus_id": 1,
-//         "lines": [
-//             {
-//                 "rolecode": "DEF-MASTERADMIN" ,
-//                 "submenus_id": 1
-//             },
-//             {
-//                 "rolecode": "DEF-MASTERADMIN",
-//                 "submenus_id": 2
-//             },
-//                         {
-//                 "rolecode": "DEF-MASTERADMIN",
-//                 "submenus_id": 3
-//             }
-//         ]
-//     },
-//     {
-//         "rolecode": "DEF-MASTERADMIN",
-//         "menus_id": 2,
-//         "lines": []
-//     }
-// ]
+// {
+//     "hearder": [
+//         {
+//             "rolecode": "admin",
+//             "menus_id": 1,
+//             "lines": [
+//                 {
+//                     "submenus_id": 10,
+//                     "rolecode": "admin"
+//                 },
+//                 {
+//                     "submenus_id": 12,
+//                     "rolecode": "admin"
+//                 }
+//             ]
+//         },
+//         {
+//             "rolecode": "user",
+//             "menus_id": 2,
+//             "lines": [
+//                 {
+//                     "submenus_id": 20
+//                 },
+//                 {
+//                     "submenus_id": 22
+//                 }
+//             ]
+//         }
+//     ]
+// }
