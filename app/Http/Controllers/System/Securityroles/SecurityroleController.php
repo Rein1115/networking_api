@@ -68,23 +68,24 @@ class SecurityroleController extends Controller
              $data = $request->all();
      
              foreach ($data['header'] as $header) {
-                $trans = Roleaccessmenu::max('transNo');
-                $transNo = empty($trans) ? 1 : $trans + 1;
+                 $trans = Roleaccessmenu::max('transNo');
+                 $transNo = empty($trans) ? 1 : $trans + 1;
      
                  $head = Validator::make($header, [
                      'rolecode' => 'required|string',
                      'menus_id' => 'required|numeric'
                  ]);
+ 
      
                  if ($head->fails()) {
                      DB::rollBack();
                      return response()->json(['success' => false, 'message' => $head->errors()], 422);
                  }
      
-                 // Delete existing records for the given rolecode
-                //  Roleaccessmenu::where('rolecode', $header['rolecode'])->delete();
-                //  Roleaccesssubmenu::where('rolecode', $header['rolecode'])->delete();
-     
+                  // Delete existing records for the given rolecode
+                 //  Roleaccessmenu::where('rolecode', $header['rolecode'])->delete();
+                 //  Roleaccesssubmenu::where('rolecode', $header['rolecode'])->delete();
+ 
                  // Insert new role access menu
                  Roleaccessmenu::insert([
                      "rolecode" => $header['rolecode'],
@@ -128,7 +129,7 @@ class SecurityroleController extends Controller
              return response()->json(['success' => false, 'message' => $th->getMessage()]);
          }
      }
-     
+ 
     
     /**
      * Display the specified resource.
