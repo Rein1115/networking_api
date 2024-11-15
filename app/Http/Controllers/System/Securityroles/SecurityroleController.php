@@ -66,8 +66,8 @@ class SecurityroleController extends Controller
          try {
              DB::beginTransaction();
              $data = $request->all();
-             foreach ($data['header'] as $header) {
      
+             foreach ($data['header'] as $header) {
                  $trans = Roleaccessmenu::max('transNo');
                  $transNo = empty($trans) ? 1 : $trans + 1;
      
@@ -77,12 +77,15 @@ class SecurityroleController extends Controller
                  ]);
      
                  if ($head->fails()) {
+                     DB::rollBack();
                      return response()->json(['success' => false, 'message' => $head->errors()], 422);
                  }
-                
-                 Roleaccessmenu::where('rolecode',$header['rolecode'])->delete();
-                 Roleaccesssubmenu::where('rolecode',$header['rolecode'])->delete();
-
+     
+                 // Delete existing records for the given rolecode
+                 // Roleaccessmenu::where('rolecode', $header['rolecode'])->delete();
+                 // Roleaccesssubmenu::where('rolecode', $header['rolecode'])->delete();
+     
+                 // Insert new role access menu
                  Roleaccessmenu::insert([
                      "rolecode" => $header['rolecode'],
                      "transNo" => $transNo,
@@ -91,9 +94,9 @@ class SecurityroleController extends Controller
                      "updated_by" => Auth::user()->fullname
                  ]);
      
+                 // Insert role access submenus if provided
                  if (!empty($header['lines']) && is_array($header['lines'])) {
                      foreach ($header['lines'] as $line) {
-     
                          if (!empty($line['submenus_id'])) {
                              $line['rolecode'] = $line['rolecode'] ?? $header['rolecode'];
      
@@ -120,7 +123,6 @@ class SecurityroleController extends Controller
      
              DB::commit();
              return response()->json(['success' => true, 'message' => 'Data inserted successfully']);
-     
          } catch (\Throwable $th) {
              DB::rollBack();
              return response()->json(['success' => false, 'message' => $th->getMessage()]);
