@@ -80,8 +80,8 @@ class SecurityroleController extends Controller
                      return response()->json(['success' => false, 'message' => $head->errors()], 422);
                  }
                 
-                 Roleaccessmenu::where('rolecode',$header['rolecode']);
-                 Roleaccesssubmenu::where('rolecode',$header['rolecode']);
+                 Roleaccessmenu::where('rolecode',$header['rolecode'])->delete();
+                 Roleaccesssubmenu::where('rolecode',$header['rolecode'])->delete();
 
                  Roleaccessmenu::insert([
                      "rolecode" => $header['rolecode'],
