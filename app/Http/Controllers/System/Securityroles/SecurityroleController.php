@@ -68,8 +68,8 @@ class SecurityroleController extends Controller
              $data = $request->all();
      
              foreach ($data['header'] as $header) {
-                 $trans = Roleaccessmenu::max('transNo');
-                 $transNo = empty($trans) ? 1 : $trans + 1;
+                $trans = Roleaccessmenu::max('transNo');
+                $transNo = empty($trans) ? 1 : $trans + 1;
      
                  $head = Validator::make($header, [
                      'rolecode' => 'required|string',
@@ -82,8 +82,8 @@ class SecurityroleController extends Controller
                  }
      
                  // Delete existing records for the given rolecode
-                 // Roleaccessmenu::where('rolecode', $header['rolecode'])->delete();
-                 // Roleaccesssubmenu::where('rolecode', $header['rolecode'])->delete();
+                //  Roleaccessmenu::where('rolecode', $header['rolecode'])->delete();
+                //  Roleaccesssubmenu::where('rolecode', $header['rolecode'])->delete();
      
                  // Insert new role access menu
                  Roleaccessmenu::insert([
