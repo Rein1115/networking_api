@@ -26,7 +26,8 @@ class ForgetpasswordController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => $validator->errors()
+                 'errors' => $validator->errors(), // Original error object
+                'message' => $validator->errors()->all(), // Flat array of errors
             ]);
         }
         
@@ -38,6 +39,7 @@ class ForgetpasswordController extends Controller
         DB::table('password_reset_tokens')->updateOrInsert(
             ['email' => $user->email],
             [
+                'email' =>  $request->email,
                 'token' => $token,
                 'created_at' => Carbon::now()
             ]
@@ -46,6 +48,7 @@ class ForgetpasswordController extends Controller
 
         $data = [
             'fullname' => $user->fullname,
+            'email' =>  $request->email,
             'token' => $token,
             'expiration' => 60 
         ];
@@ -70,13 +73,13 @@ class ForgetpasswordController extends Controller
                 'password' => 'required|confirmed',
             ]);
             
-            if ($validator->fails()) {
-                
+             if ($validator->fails()) {
                 return response()->json([
-                    'errors' => $validator->errors(),
-                ]);
+                    'success' => false,
+                    'errors' => $validator->errors(), // Original error object
+                    'message' => $validator->errors()->all(), // Flat array of errors
+                ], 422);
             }
-
         
             $token = DB::select('SELECT created_at FROM password_reset_tokens WHERE token = ?', [$request->token]);
 
@@ -90,9 +93,10 @@ class ForgetpasswordController extends Controller
                         'success' => false,
                         'message' => 'Token has expired. Please request a new one.'
                     ]);
-                }   
+                }       
                 DB::commit();
                 DB::update('UPDATE users SET password = ? WHERE email = ?', [Hash::make($request->password), $request->email]);
+                DB::delete('DELETE FROM password_reset_tokens WHERE token = ?', [$request->token]);
                 return response()->json([
                     'success' => true,
                     'message' => 'Password changed successfully.'
@@ -109,17 +113,5 @@ class ForgetpasswordController extends Controller
             DB::rollback();
             return response()->json(['success' => false, "message" => $th->getMessage()]);
         }
-
-
-
-        
-
-
-        
-
     }
-
-
-
-   
 }

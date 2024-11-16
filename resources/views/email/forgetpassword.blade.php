@@ -9,7 +9,7 @@
 <body>
     Hello {{ $data['fullname'] }},
     Click the link below to reset your password. This link will expire in {{ $data['expiration'] }} minutes.
-    <a href="www.nexsuz.com/reset-password/{{$data['token']}}" >Reset Password</a>
+    <a href="www.nexsuz.com/reset-password/{{$data['email']}}/{{$data['token']}}" >Reset Password</a>
     Thanks,
 </body>
 </html>

@@ -49,7 +49,8 @@ class LoginController extends Controller
             return response()->json([
                 'success' => true,
                 'token' => $token,
-                'user' => $user,
+                'message' => "Login successful.",
+                // 'user' => $user,
             ]);
         }
         return response()->json(['success' => false, 'message' => 'The email or password is incorrect. Please check your credentials.']);
