@@ -47,6 +47,7 @@ class ForgetpasswordController extends Controller
         
 
         $data = [
+            'fname' => $user->fname,
             'fullname' => $user->fullname,
             'email' =>  $request->email,
             'token' => $token,
@@ -62,7 +63,6 @@ class ForgetpasswordController extends Controller
                 'message' => 'Failed to send password reset email. Please try again later.'
             ], 500);
         }
-
     }
 
     public function resetpassword(Request $request){
@@ -114,4 +114,44 @@ class ForgetpasswordController extends Controller
             return response()->json(['success' => false, "message" => $th->getMessage()]);
         }
     }
+
+    public function activate(Request $request){
+
+
+        try {
+            DB::beginTransaction();
+            
+            $validator = Validator::make($request->all(), [
+                'email' => 'required|email|exists:users,email',
+            ]);
+    
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'errors' => $validator->errors(), // Original error object
+                    'message' => $validator->errors()->all(), // Flat array of errors
+                ], 422);
+            }
+
+            $activate = DB::update('UPDATE users SET role_code = "DEF-CLIENTS"  WHERE email =?', [$request->email]);
+
+            if($activate ){
+                 DB::commit();
+                 return response()->json(['success' => false, "message" => "Account activated."]);
+            }else{
+                DB::rollback();
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Something went wrong.'
+                ]);
+            }
+        } catch (\Throwable $th) {
+            DB::rollback();
+            return response()->json(['success' => false, "message" => $th->getMessage()]);
+        }
+        
+
+
+    }
+
 }

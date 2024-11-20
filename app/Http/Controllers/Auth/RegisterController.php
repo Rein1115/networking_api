@@ -15,8 +15,6 @@ class RegisterController extends Controller
     {
        try {
 
-
-
             // Validate the request data
             DB::beginTransaction();
             $validator = Validator::make($request->all(), [

@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->char('status', 1)->default('A'); // You could use ENUM or a tiny integer for statuses
+            $table->char('status', 1)->default('I'); // You could use ENUM or a tiny integer for statuses
             $table->string('company_code')->nullable();
             $table->integer('code')->unique(); // Added unique constraint
             $table->string('role_code')->nullable(); // Assuming there's a roles table
