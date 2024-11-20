@@ -49,7 +49,7 @@ class RegisterController extends Controller
                 'code' =>  $code ,
                 'role_code' => "DEF-USERS",
             ]);
-// test
+
             // Return a success response
             DB::commit();
             return response()->json([
