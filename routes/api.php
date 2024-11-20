@@ -28,11 +28,12 @@ use App\Http\Controllers\Select2\SelectController;
 
 // PUBLIC
 Route::post('login',[LoginController::class,'login'])->name('login');
+
 Route::post('resetpassword',[ForgetpasswordController::class,'resetpassword'])->name('resetpassword');
+
 Route::post('forgetpassword',[ForgetpasswordController::class,'forgetpassword'])->name('forgetpassword');
 
 Route::post('activateaccount',[ForgetpasswordController::class,'activate'])->name('activateaccount');
-
 
 Route::post('register',[RegisterController::class,'register'])->name('register');
 
