@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use  App\Http\Controllers\Auth\RegisterController;
 use  App\Http\Controllers\Auth\ForgetpasswordController;
-use  App\Http\Controllers\Auth\ClientregisterController;
 
 use App\Http\Controllers\Accessrolemenu\AccessrolemenuController;
 
@@ -34,9 +33,9 @@ Route::post('resetpassword',[ForgetpasswordController::class,'resetpassword'])->
 
 Route::post('forgetpassword',[ForgetpasswordController::class,'forgetpassword'])->name('forgetpassword');
 
-Route::post('clientregister',[ClientregisterController::class,'clientRegister'])->name('clientregister');
-
 Route::post('register',[RegisterController::class,'register'])->name('register');
+
+Route::post('accountactivation',[RegisterController::class,'accountactivation'])->name('accountactivation');
 
 
 

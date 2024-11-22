@@ -33,7 +33,7 @@ class Registeractivation extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Registeractivation',
+            subject: 'Nexsuz Account Activation',
         );
     }
 

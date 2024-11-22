@@ -17,7 +17,6 @@ class RegisterController extends Controller
     public function register(Request $request)
     {
        try {
-
             // Validate the request data
             DB::beginTransaction();
             $validator = Validator::make($request->all(), [
@@ -98,98 +97,35 @@ class RegisterController extends Controller
        }
     }
 
-}
-
-// try {
-//     // Validate the request data
-//     DB::beginTransaction(); // Start transaction to handle both user and resource inserts
+    public function accountactivation(Request $request)
+    {
+        try {
+            DB::beginTransaction();
     
-//     $validator = Validator::make($request->all(), [
-//         'fname' => 'required|string|max:255',
-//         'lname' => 'required|string|max:255',
-//         'email' => 'required|string|email|max:255|unique:users',
-//         'password' => 'required|string|confirmed|min:1',
-//     ]);
+            // Ensure email is provided
+            if (!$request->has('email')) {
+                return response()->json(['success' => false, 'message' => 'Email address is required.']);
+            }
+         
+            $activate = User::where('email', $request->email)
+                ->update(['status' => 'A']);
+    
+            if ($activate) {
+                DB::commit();
+                return response()->json(['success' => true, 'message' => 'Your account has been activated.']);
+            } else {
+                DB::rollBack();
+                return response()->json(['success' => false, 'message' => 'No user found with that email address.']);
+            }
+    
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => $th->getMessage()]);
+        }
+    }
+    
 
-//     // Check for validation errors
-//     if ($validator->fails()) {
-//         return response()->json([
-//             'success' => false,
-//             'message'=> $validator->errors()->all()
-//         ]);
-//     }
-
- 
-//     $cod = User::max('code');
-//     $code = empty($cod) ? 701 : $cod + 1;
-
-
-//     $user = User::create([
-//         'fname' => $request->fname,
-//         'lname' => $request->lname,
-//         'mname' => '',
-//         'contactno' => $request->contactno,
-//         'fullname' => ucfirst($request->fname .' '.$request->lname),
-//         'email' => $request->email,
-//         'password' => Hash::make($request->password), 
-//         'company' => $request->company,
-//         'code' =>  $code ,
-//         'role_code' => $request->code == 0 ? 'DEF-USERS' : 'DEF-CLIENTS',
-//     ]);
-
-
-//     $resource = Resource::create([
-//         'code' => $code,
-//         'fname' => $request->fname,
-//         'lname' => $request->lname,
-//         'mname' => '',
-//         'fullname' => ucfirst($request->fname .' '.$request->lname),
-//         'contact_no' => $request->contactno,
-//         'age' => $request->age,
-//         'email' => $request->email,
-//         'profession' => $request->profession,
-//         'company' => $request->company,
-//         'industry' => $request->industry,
-//         'companywebsite' => $request->companywebsite,
-//         'role_code' => $request->statuscode == 0 ? 'DEF-USERS' : 'DEF-CLIENTS',
-//     ]);
-//     $data = [
-//         'fname' => $request->fname,
-//         'email' => $request->email,
-//     ];
-
-//     $emailSent = Mail::to($request->email)->send(new Registeractivation($data));
-
-//     if (!$emailSent) {
-     
-//         DB::rollBack();
-//         return response()->json([
-//             'success' => false,
-//             'message' => 'Failed to send the activation email. Please try again later.'
-//         ]);
-//     }
-
-//     // Commit the transaction if everything is successful
-//     DB::commit();
-
-//     // Return success response
-//     return response()->json([
-//         'success' => true,
-//         'message' => 'Registered successfully, activation email sent.',
-//         // 'data' => $user
-//     ], 201);
-
-// } catch (\Throwable $th) {
-//     // Rollback the transaction if there's an exception
-//     DB::rollBack();
-//     return response()->json([
-//         'success' => false,
-//         'message' => $th->getMessage()
-//     ]);
-// }
-
-
-
+}
 
 // register POST
 

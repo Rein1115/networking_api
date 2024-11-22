@@ -18,7 +18,7 @@ class CheckStatus
     public function handle(Request $request, Closure $next): Response
     {
         if(Auth::user()->status === "I"){
-            return response()->json(['success' => false, 'message' => "Your account is inactive."]);
+            return response()->json(['success' => false, 'message' => "Your account is inactive. Please activate your account through the email we sent to your Gmail."]);
         }
          return $next($request);
     }
