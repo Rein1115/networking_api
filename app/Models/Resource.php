@@ -24,7 +24,7 @@ class Resource extends Model
         'company',
         'industry',
         'companywebsite',
-        'rolecode',
+        'role_code',
         'h1_fname',
         'h1_lname',
         'h1_mname',

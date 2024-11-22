@@ -9,19 +9,23 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class Register extends Mailable
+class Registeractivation extends Mailable
 {
     use Queueable, SerializesModels;
 
     /**
      * Create a new message instance.
      */
+
+
     public $data;
+
     public function __construct($data)
     {
         //
         $this->data=$data;
     }
+
 
     /**
      * Get the message envelope.
@@ -29,7 +33,7 @@ class Register extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Clientregister',
+            subject: 'Registeractivation',
         );
     }
 
@@ -39,7 +43,7 @@ class Register extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'email.Clientactivation',
+            view: 'email.registeractivationaccount',
             with:['data' => $this->data]
         );
     }

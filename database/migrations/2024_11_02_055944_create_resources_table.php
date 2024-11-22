@@ -18,14 +18,14 @@ return new class extends Migration
             $table->string('lname')->nullable();//done
             $table->string('mname')->nullable();//done
             $table->string('fullname')->nullable();//done
-            $table->integer('contact_no')->nullable(); //done
-            $table->integer('age')->nullable(); //done
+            $table->string('contact_no')->nullable(); //done
+            $table->string('age')->nullable(); //done
             $table->string('email')->unique(); //done
             $table->string('profession')->nullable(); //done
             $table->string('company')->nullable(); //done
             $table->string('industry')->nullable(); //done
             $table->string('companywebsite')->nullable(); //done
-            $table->integer('rolecode')->nullable();
+            $table->string('role_code')->nullable();
         
 
             // $table->string('address1')->nullable();
