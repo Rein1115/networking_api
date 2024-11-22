@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
+use App\Models\Resource;
 use DB;
 class RegisterController extends Controller
 {
@@ -23,7 +24,7 @@ class RegisterController extends Controller
                 // 'mname' => 'nullable|string|max:255',
                 'contactno' => 'nullable | string',
                 'email' => 'required|string|email|max:255|unique:users',
-                'password' => 'required|string|confirmed|min:1', // Includes password confirmation
+                'password' => 'required|string|confirmed|min:1',
             ]);
             // Check for validation errors
             if ($validator->fails()) {
@@ -44,8 +45,25 @@ class RegisterController extends Controller
                 'fullname' => ucfirst($request->fname .' '.$request->lname) ,
                 'email' => $request->email,
                 'password' => Hash::make($request->password), 
+                'company' => $request->company,
                 'code' =>  $code ,
-                'role_code' => "DEF-USERS",
+                'role_code' => $request->code == 0 ? 'DEF-USERS' : 'DEF-CLIENTS',
+            ]);
+            
+            $resource = Resource::create([
+                'code' => $code,                
+                'fname' => $request->fname,
+                'lname' => $request->lname,         
+                'mname' => '',            
+                'fullname' => ucfirst($request->fname .' '.$request->lname) ,
+                'contact_no' =>  $request->contactno,    
+                'age' =>  $request->age,                   
+                'email' => $request->email, 
+                'profession' => $request->profession,     
+                'company' => $request->company,       
+                'industry' => $request->company,     
+                'companywebsite' => $request->companywebsite, 
+                'rolecode' => $request->code == 0 ? 'DEF-USERS' : 'DEF-CLIENTS',     
             ]);
 
             // Return a success response

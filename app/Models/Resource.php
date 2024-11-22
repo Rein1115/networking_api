@@ -18,13 +18,12 @@ class Resource extends Model
         'mname',
         'fullname',
         'contact_no',
+        'age',
         'email',
-        'address1',
-        'address2',
-        'city',
-        'province',
-        'postal_code',
-        'companycode',
+        'profession',
+        'company',
+        'industry',
+        'companywebsite',
         'rolecode',
         'h1_fname',
         'h1_lname',
@@ -40,6 +39,6 @@ class Resource extends Model
         'h1_companycode',
         'h1_rolecode',
         'created_by',
-        'updated_by',
+        'updated_by'
     ];
 }
