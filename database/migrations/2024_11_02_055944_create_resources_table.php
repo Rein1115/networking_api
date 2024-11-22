@@ -13,22 +13,28 @@ return new class extends Migration
     {
         Schema::create('resources', function (Blueprint $table) {
             $table->id();
-            $table->integer('code')->unique(); // Unique code
-            $table->string('fname')->nullable();
-            $table->string('lname')->nullable();
-            $table->string('mname')->nullable();
-            $table->string('fullname')->nullable(); // Consider if this is necessary
-            $table->integer('contact_no')->nullable(); // Consider using string if it might include non-numeric characters
-            $table->string('email')->unique();
-            $table->string('address1')->nullable();
-            $table->string('address2')->nullable();
-            $table->string('city')->nullable();
-            $table->string('province')->nullable();
-            $table->string('postal_code')->nullable();
-            $table->string('companycode')->nullable();
+            $table->integer('code')->unique(); 
+            $table->string('fname')->nullable();//done
+            $table->string('lname')->nullable();//done
+            $table->string('mname')->nullable();//done
+            $table->string('fullname')->nullable();//done
+            $table->integer('contact_no')->nullable(); //done
+            $table->integer('age')->nullable(); //done
+            $table->string('email')->unique(); //done
+            $table->string('profession')->nullable(); //done
+            $table->string('company')->nullable(); //done
+            $table->string('industry')->nullable(); //done
+            $table->string('companywebsite')->nullable(); //done
             $table->integer('rolecode')->nullable();
+        
+
+            // $table->string('address1')->nullable();
+            // $table->string('address2')->nullable();
+            // $table->string('city')->nullable();
+            // $table->string('province')->nullable();
+            // $table->string('postal_code')->nullable();
+
             
-            // Fields for the second contact person
             $table->string('h1_fname')->nullable();
             $table->string('h1_lname')->nullable();
             $table->string('h1_mname')->nullable();
