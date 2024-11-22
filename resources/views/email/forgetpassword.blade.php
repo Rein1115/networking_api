@@ -20,13 +20,13 @@
 
         <br><br>
 
-        <p>If you did not request a new password, please let us know immediately by replying to this email.</p>
+        {{-- <p>If you did not request a new password, please let us know immediately by replying to this email.</p>
 
         <p>Alternatively, you can sign in to your Nexsuz account below:</p>
         <!-- Sign In Button -->
         <a href="https://www.nexsuz.com/signInUI/{{$data['email']}}" class="btn btn-success btn-lg">Sign In</a>
 
-        <br><br>
+        <br><br> --}}
 
         <p>You can find answers to most questions and get in touch with us at <a href="https://support.nexsuz.com">support.nexsuz.com</a>. We’re happy to assist you.</p>
     </div>
