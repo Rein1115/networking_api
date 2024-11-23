@@ -13,8 +13,7 @@
         <div style="margin-bottom: 20px;">
             <img src=".../nexsuzlogo.png" alt="Nexsuz Logo" style="max-width: 150px; height: auto;">
         </div>
-        
-        
+
         <!-- Greeting -->
         <h4 style="font-size: 24px; color: #333; margin-bottom: 20px;">
             Hi {{ $data['fname'] }},
