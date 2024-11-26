@@ -48,11 +48,9 @@ class RegisterController extends Controller
                 'password' => Hash::make($request->password), 
                 'company' => $request->company,
                 'code' =>  $code ,
-                'role_code' => $request->code == 0 ? 'DEF-USERS' : 'DEF-CLIENTS',
-            ]);
+                'role_code' => $request->code == 0 ? 'DEF-USERS' : 'DEF-CLIENT',
+            ]);           
             
-
-            // $request->code === 0 def-users  else 'def-clients'
 
             $resource = Resource::create([
                 'code' => $code,                
@@ -67,7 +65,7 @@ class RegisterController extends Controller
                 'company' => $request->company,       
                 'industry' => $request->industry,     
                 'companywebsite' => $request->companywebsite, 
-                'role_code' => $request->statuscode == 0 ? 'DEF-USERS' : 'DEF-CLIENTS',     
+                'role_code' => $request->statuscode == 0 ? 'DEF-USERS' : 'DEF-CLIENT',     
             ]);
             $data = [
                         'fname' => $request->fname,

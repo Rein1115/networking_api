@@ -10,8 +10,8 @@
     <div style="max-width: 600px; margin: 0 auto; padding: 20px; background-color: #ffffff; border-radius: 8px; border: 1px solid #ddd;">
         
         <!-- Nexsuz Logo -->
-        <div style="margin-bottom: 20px;">
-            <img src=".../nexsuzlogo.png" alt="Nexsuz Logo" style="max-width: 150px; height: auto;">
+        <div style="margin-bottom: 5px;">
+            <img src="https://red-anteater-382469.hostingersite.com/public/nexsuzlogo.png" alt="Nexsuz Logo" style="max-width: 50px; height: 25px;">
         </div>
 
         <!-- Greeting -->

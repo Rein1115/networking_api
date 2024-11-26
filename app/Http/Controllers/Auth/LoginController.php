@@ -37,10 +37,7 @@ class LoginController extends Controller
             if ($user->status === 'I') {
                 // Log out the user
                 Auth::logout();
-                return response()->json([
-                    'success' => false,
-                    'message' => "Your account is inactive."
-                ]);
+                return response()->json(['success' => false, 'message' => "Your account is inactive. Please activate your account through the email we sent to your Gmail."]);
             }
     
             // If the account is active, create a token
