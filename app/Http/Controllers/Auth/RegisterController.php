@@ -48,7 +48,7 @@ class RegisterController extends Controller
                 'password' => Hash::make($request->password), 
                 'company' => $request->company,
                 'code' =>  $code ,
-                'role_code' => $request->code == 0 ? 'DEF-USERS' : 'DEF-CLIENT',
+                'role_code' => $request->statuscode == 0 ? 'DEF-USERS' : 'DEF-CLIENT',
             ]);           
             
 
