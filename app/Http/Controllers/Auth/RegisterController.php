@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Hash;
@@ -11,6 +12,11 @@ use App\Models\User;
 use App\Models\Resource;
 use App\Mail\Registeractivation;
 use DB;
+use Carbon\Carbon;
+
+
+
+
 class RegisterController extends Controller
 {
     //
@@ -99,28 +105,36 @@ class RegisterController extends Controller
     {
         try {
             DB::beginTransaction();
-    
+        
             // Ensure email is provided
             if (!$request->has('email')) {
                 return response()->json(['success' => false, 'message' => 'Email address is required.']);
             }
-         
-            $activate = User::where('email', $request->email)
-                ->update(['status' => 'A']);
+    
+            // Find the user by email
+            $user = User::where('email', $request->email)->first();
+    
+            // If user is not found, return an error
+            if (!$user) {
+                return response()->json(['success' => false, 'message' => 'No user found with that email address.']);
+            }
+            $activate = $user->update(['status' => 'A']);
+
     
             if ($activate) {
                 DB::commit();
                 return response()->json(['success' => true, 'message' => 'Your account has been activated.']);
             } else {
                 DB::rollBack();
-                return response()->json(['success' => false, 'message' => 'No user found with that email address.']);
+                return response()->json(['success' => false, 'message' => 'Activation failed.']);
             }
-    
         } catch (\Throwable $th) {
+         
             DB::rollBack();
             return response()->json(['success' => false, 'message' => $th->getMessage()]);
         }
     }
+    
     
 
 }
