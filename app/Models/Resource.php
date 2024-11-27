@@ -25,6 +25,7 @@ class Resource extends Model
         'industry',
         'companywebsite',
         'role_code',
+        'designation',
         'h1_fname',
         'h1_lname',
         'h1_mname',
@@ -38,6 +39,7 @@ class Resource extends Model
         'h1_postal_code',
         'h1_companycode',
         'h1_rolecode',
+        'h1_designation',
         'created_by',
         'updated_by'
     ];

@@ -11,6 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
+
         Schema::create('resources', function (Blueprint $table) {
             $table->id();
             $table->integer('code')->unique(); 
@@ -26,6 +27,7 @@ return new class extends Migration
             $table->string('industry')->nullable(); //done
             $table->string('companywebsite')->nullable(); //done
             $table->string('role_code')->nullable();
+            $table->string('designation')->nullable();
         
             // $table->string('address1')->nullable();
             // $table->string('address2')->nullable();
@@ -33,7 +35,6 @@ return new class extends Migration
             // $table->string('province')->nullable();
             // $table->string('postal_code')->nullable();
 
-            
             $table->string('h1_fname')->nullable();
             $table->string('h1_lname')->nullable();
             $table->string('h1_mname')->nullable();
@@ -47,6 +48,7 @@ return new class extends Migration
             $table->string('h1_postal_code')->nullable();
             $table->string('h1_companycode')->nullable();
             $table->integer('h1_rolecode')->nullable();
+            $table->string('h1_designation')->nullable();
         
             $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();

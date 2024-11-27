@@ -22,26 +22,37 @@ class RegisterController extends Controller
     //
     public function register(Request $request)
     {
-       try {
-            // Validate the request data
+        try {
+            // Begin Transaction
             DB::beginTransaction();
+
+            // Validate the request data
             $validator = Validator::make($request->all(), [
                 'fname' => 'required|string|max:255',
                 'lname' => 'required|string|max:255',
-                // 'mname' => 'nullable|string|max:255',
-                'contactno' => 'nullable | string',
+                'contactno' => 'nullable|string|max:15',
                 'email' => 'required|string|email|max:255|unique:users',
-                'password' => 'required|string|confirmed|min:1',
+                'password' => 'required|string|confirmed|min:8',
+                'company' => 'nullable|string|max:255',
+                'industry' => 'nullable|string|max:255',
+                'companywebsite' => 'nullable|url',
+                'designation' => 'nullable|string|max:255',
+                'age' => 'nullable|integer|min:1|max:150',
+                'profession' => 'nullable|string|max:255',
+                'statuscode' => 'required|integer|in:0,1', // Validates status codes
             ]);
+
             // Check for validation errors
             if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
-                    'message'=> $validator->errors()->all()
-                ]);
+                    'message' => $validator->errors()->all()
+                ], 422);
             }
-            $cod = User::max('code');
-            $code = empty($cod) ? 701 : $cod + 1;
+
+            // Generate a new user code
+            $lastCode = User::max('code');
+            $newCode = empty($lastCode) ? 701 : $lastCode + 1;
 
             // Create the user
             $user = User::create([
@@ -49,94 +60,131 @@ class RegisterController extends Controller
                 'lname' => $request->lname,
                 'mname' => '',
                 'contactno' => $request->contactno,
-                'fullname' => ucfirst($request->fname .' '.$request->lname) ,
+                'fullname' => ucfirst($request->fname . ' ' . $request->lname),
                 'email' => $request->email,
-                'password' => Hash::make($request->password), 
+                'password' => Hash::make($request->password),
                 'company' => $request->company,
-                'code' =>  $code ,
+                'code' => $newCode,
                 'role_code' => $request->statuscode == 0 ? 'DEF-USERS' : 'DEF-CLIENT',
-            ]);           
-            
-
-            $resource = Resource::create([
-                'code' => $code,                
-                'fname' => $request->fname,
-                'lname' => $request->lname,         
-                'mname' => '',            
-                'fullname' => ucfirst($request->fname .' '.$request->lname) ,
-                'contact_no' =>  $request->contactno,    
-                'age' =>  $request->age,                   
-                'email' => $request->email, 
-                'profession' => $request->profession,     
-                'company' => $request->company,       
-                'industry' => $request->industry,     
-                'companywebsite' => $request->companywebsite, 
-                'role_code' => $request->statuscode == 0 ? 'DEF-USERS' : 'DEF-CLIENT',     
             ]);
-            $data = [
-                        'fname' => $request->fname,
-                        'email' => $request->email,
-                    ];
-              $emailSent = Mail::to($request->email)->send(new Registeractivation($data));
 
-            if (!$emailSent) {
-            
-                DB::rollBack();
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Failed to send the activation email. Please try again later.'
-                ]);
-            }
+            // Create the resource
+            Resource::create([
+                'code' => $newCode,
+                'fname' => $request->fname,
+                'lname' => $request->lname,
+                'mname' => '',
+                'fullname' => ucfirst($request->fname . ' ' . $request->lname),
+                'contact_no' => $request->contactno,
+                'age' => $request->age,
+                'email' => $request->email,
+                'profession' => $request->profession,
+                'company' => $request->company,
+                'industry' => $request->industry,
+                'companywebsite' => $request->companywebsite,
+                'role_code' => $request->statuscode == 0 ? 'DEF-USERS' : 'DEF-CLIENT',
+                'designation' => $request->designation,
+            ]);
+
+            // Generate token and code for email verification
+            $token = Str::random(10);
+            $verificationCode = Str::random(7);
+
+            // Insert the password reset token
+            DB::insert('INSERT INTO email_codes (email, code) VALUES (?, ?)', [
+                $request->email,
+                $verificationCode,
+            ]);
+
+            // Prepare email data
+            $data = [
+                'fname' => $request->fname,
+                'email' => $request->email,
+                'code' => $verificationCode,
+            ];
+
+            // Send the activation email
+            Mail::to($request->email)->send(new Registeractivation($data));
+
+            // Commit transaction
+            DB::commit();
 
             // Return a success response
-            DB::commit();
             return response()->json([
                 'success' => true,
-                'message' => "You're registered successfully. Please visit your Gmail to activate your account.",
-                // 'data' => $user
+                'message' => "You have registered successfully. Please check your email to activate your account.",
             ], 201);
-       } catch (\Throwable $th) {
-        DB::rollBack();
-            return response()->json(['success' => false, "message" =>  $th->getMessage() ]);
-       }
+        } catch (\Throwable $th) {
+            // Rollback transaction and return error
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => $th->getMessage(),
+            ], 500);
+        }
     }
 
     public function accountactivation(Request $request)
     {
         try {
             DB::beginTransaction();
-        
-            // Ensure email is provided
-            if (!$request->has('email')) {
-                return response()->json(['success' => false, 'message' => 'Email address is required.']);
-            }
-    
-            // Find the user by email
-            $user = User::where('email', $request->email)->first();
-    
-            // If user is not found, return an error
-            if (!$user) {
-                return response()->json(['success' => false, 'message' => 'No user found with that email address.']);
-            }
-            $activate = $user->update(['status' => 'A']);
 
-    
-            if ($activate) {
+            // Validate the request data
+            $validator = Validator::make($request->all(), [
+                'email' => 'required|string|email',
+                'code' => 'required|string',
+            ]);
+
+            // Check for validation errors
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $validator->errors()->all(),
+                ]);
+            }
+
+            // Check if the record exists
+            $exists = DB::table('email_codes')
+                        ->where('email', $request->email)
+                        ->where('code', $request->code)
+                        ->exists();
+
+            if ($exists) {
+                // Activate the user account
+                $user = User::where('email', $request->email)->first();
+                if (!$user) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'User not found.',
+                    ]);
+                }
+                $user->status = 'A';
+                $user->save();
+
+                // Delete the token record
+                DB::table('email_codes')
+                    ->where('email', $request->email)
+                    ->where('code', $request->code)
+                    ->delete();
+
                 DB::commit();
-                return response()->json(['success' => true, 'message' => 'Your account has been activated.']);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Account has been activated successfully.',
+                ]);
             } else {
-                DB::rollBack();
-                return response()->json(['success' => false, 'message' => 'Activation failed.']);
+                // If no record exists, return an error response
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid email or code.',
+                ]);
             }
         } catch (\Throwable $th) {
-         
             DB::rollBack();
             return response()->json(['success' => false, 'message' => $th->getMessage()]);
         }
     }
-    
-    
-
 }
 
 // register POST
@@ -165,6 +213,7 @@ class RegisterController extends Controller
 //     "company": "ABC Corp.", //COMPANY
 //     "industry": "Technology", //INDUSTRY
 //     "companywebsite": "https://www.abccorp.com", //COMPANY WEBSITE
+//    "designation": "Software Engineer",
 //     "statuscode": 1
 // }
 
