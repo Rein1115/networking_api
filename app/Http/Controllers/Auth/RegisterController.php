@@ -35,7 +35,7 @@ class RegisterController extends Controller
                 'password' => 'required|string|confirmed|min:8',
                 'company' => 'nullable|string|max:255',
                 'industry' => 'nullable|string|max:255',
-                'companywebsite' => 'nullable|url',
+                'companywebsite' => 'nullable',
                 'designation' => 'nullable|string|max:255',
                 'age' => 'nullable|integer|min:1|max:150',
                 'profession' => 'nullable|string|max:255',
@@ -47,7 +47,7 @@ class RegisterController extends Controller
                 return response()->json([
                     'success' => false,
                     'message' => $validator->errors()->all()
-                ], 422);
+                ]);
             }
 
             // Generate a new user code

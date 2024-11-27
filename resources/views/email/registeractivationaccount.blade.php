@@ -30,7 +30,7 @@
         
         <!-- Activation Button -->
         <div style="text-align: center; margin-bottom: 20px;">
-            <a href="https://www.nexsuz.com/signInUI/{{ $data['email'] }}" 
+            <a href="https://www.nexsuz.com/activation/{{ $data['email'] }}"
                style="background-color: #28a745; color: white; padding: 12px 24px; text-decoration: none; font-size: 16px; border-radius: 5px; font-weight: bold; display: inline-block;">
                Activate My Account
             </a>
