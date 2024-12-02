@@ -28,7 +28,8 @@ return new class extends Migration
             $table->string('companywebsite')->nullable(); //done
             $table->string('role_code')->nullable();
             $table->string('designation')->nullable();
-        
+            $table->string('profile_picture')->nullable();
+            
             // $table->string('address1')->nullable();
             // $table->string('address2')->nullable();
             // $table->string('city')->nullable();

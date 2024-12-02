@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use  App\Http\Controllers\Auth\RegisterController;
 use  App\Http\Controllers\Auth\ForgetpasswordController;
+use  App\Http\Controllers\Auth\ProfileController;
 
 use App\Http\Controllers\Accessrolemenu\AccessrolemenuController;
 
@@ -44,7 +45,12 @@ Route::middleware(['auth:sanctum','checkstatus'])->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user(); // Return authenticated user information
     });
+    //logout
     Route::post('logout',[LoginController::class,'logout'])->name('logout');
+
+
+    // PROFILE resource
+    Route::resource('profile',ProfileController::class)->names('profile');
 
     // Accessrolemenu
     // User access to the menu depends on their role. GET 
@@ -64,5 +70,7 @@ Route::middleware(['auth:sanctum','checkstatus'])->group(function () {
 
     // SELECT2 ALL REQUEST
     Route::post('rolecode',[SelectController::class,'rolecode'])->name('rolecode');
+
+
 
 });
