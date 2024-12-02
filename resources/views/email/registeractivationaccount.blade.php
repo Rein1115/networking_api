@@ -38,8 +38,9 @@
     
         <!-- Support Message -->
         <p style="font-size: 16px; color: #333; margin-bottom: 20px;">
-            If you have any questions or need assistance, feel free to visit our support page at 
-            <a href="https://support.nexsuz.com" style="color: #007bff; text-decoration: none;">support.nexsuz.com</a>. We’re here to help!
+            You can find answers to most questions and get in touch with us at <a href="https://support.nexsuz.com" style="color: #007bff; text-decoration: none;">support.nexsuz.com</a>, we're happy to assist you.
+            -The Nexsuz team.
+            
         </p>
     
     </div>

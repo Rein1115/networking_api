@@ -16,19 +16,15 @@
         
         <p>You can reset your password by clicking the button below:</p>
         <!-- Reset Password Button -->
-        <a href="https://www.nexsuz.com/reset-password/{{$data['email']}}/{{$data['token']}}" class="btn btn-primary btn-lg">Reset Password</a>
-
+        <div style="text-align: center; margin-bottom: 20px;">
+            <a href="https://www.nexsuz.com/reset-password/{{$data['email']}}/{{$data['token']}}"   style="background-color: #28a745; color: white; padding: 12px 24px; text-decoration: none; font-size: 16px; border-radius: 5px; font-weight: bold; display: inline-block;">Reset Password</a>
+        </div>
         <br><br>
-
-        {{-- <p>If you did not request a new password, please let us know immediately by replying to this email.</p>
-
-        <p>Alternatively, you can sign in to your Nexsuz account below:</p>
-        <!-- Sign In Button -->
-        <a href="https://www.nexsuz.com/signInUI/{{$data['email']}}" class="btn btn-success btn-lg">Sign In</a>
-
-        <br><br> --}}
-
-        <p>You can find answers to most questions and get in touch with us at <a href="https://support.nexsuz.com">support.nexsuz.com</a>. We’re happy to assist you.</p>
+        <p style="font-size: 16px; color: #333; margin-bottom: 20px;">
+            You can find answers to most questions and get in touch with us at <a href="https://support.nexsuz.com" style="color: #007bff; text-decoration: none;">support.nexsuz.com</a>, we're happy to assist you.
+            -The Nexsuz team.
+            
+        </p>
     </div>
 
     <!-- Optional Bootstrap JS and Popper.js (for full functionality if needed) -->
