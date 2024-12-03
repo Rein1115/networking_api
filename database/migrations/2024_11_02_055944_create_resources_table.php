@@ -13,6 +13,7 @@ return new class extends Migration
     {
 
         Schema::create('resources', function (Blueprint $table) {
+            
             $table->id();
             $table->integer('code')->unique(); 
             $table->string('fname')->nullable();//done
