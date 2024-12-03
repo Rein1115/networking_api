@@ -29,6 +29,7 @@ return new class extends Migration
             $table->string('role_code')->nullable();
             $table->string('designation')->nullable();
             $table->string('profile_picture')->nullable();
+            $table->string('resumepdf')->nullable();
             
             // $table->string('address1')->nullable();
             // $table->string('address2')->nullable();
