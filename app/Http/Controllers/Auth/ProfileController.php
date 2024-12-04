@@ -8,7 +8,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use App\Models\Resource;
+use App\Models\Usercapabilitie;
+use App\Models\Usereducation;
+use App\Models\Userprofile;
 use DB;
+
 use Illuminate\Support\Facades\File; 
 
 
@@ -53,27 +57,26 @@ class ProfileController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+
     public function store(Request $request)
     {
-        //
-        return Auth::user()->code;
-        // if (Auth::check()) {
-            try {
-                // Begin Transaction
-                DB::beginTransaction();
+        // Check if the user is authenticated
+        if (Auth::check()) {
+            // Begin Transaction
+            DB::beginTransaction();
 
-                // Validate the request data
-                $validator = Validator::make($request->all(), [
-                    'fname' => 'required|string|max:255',
-                    'lname' => 'required|string|max:255',
-                    'contactno' => 'nullable|string|max:15',
-                    'password' => 'nullable|string|confirmed|min:8',
-                    'industry' => 'nullable|string|max:255',
-                    'designation' => 'nullable|string|max:255',
-                    'age' => 'nullable|integer|min:1|max:150',
-                    'profession' => 'nullable|string|max:255',
-                    'profile_picture' => 'nullable|file|mimes:jpeg,png,jpg|max:2048',
-                    'resumepdf' => 'nullable|file|mimes:pdf|max:4096',
+            try {
+                $data = $request->all();
+
+                // Validate the request data for the user profile
+                $validator = Validator::make($data, [
+                    'photo_pic' => 'nullable|string',
+                    'contact_no' => 'nullable|string|max:255',
+                    'contact_visibility' => 'nullable|boolean',
+                    'email_visibility' => 'nullable|boolean',
+                    'date_birth' => 'nullable|date',
+                    'home_country' => 'nullable|string|max:255',
+                    'current_location' => 'nullable|string|max:255',
                 ]);
 
                 // Check for validation errors
@@ -84,71 +87,109 @@ class ProfileController extends Controller
                     ]);
                 }
 
-                // Find the authenticated user
-                $user = User::where('code', Auth::user()->code)->firstOrFail();
+                // Get the new transaction number
+                $transNo = UserProfile::max('transNo');
+                $newtrans = empty($transNo) ? 1 : $transNo + 1;
 
-                // Handle the Profile Picture Upload
-                $profilePicturePath = null;
-                if ($request->hasFile('profile_picture')) {
-                    $profilePicture = $request->file('profile_picture');
-                    $profilePicturePath = $profilePicture->storeAs(
-                        'public/uploads/' . Auth::user()->code . '/profilepicture', // Separate folder for profile pictures
-                        'profile_picture.' . $profilePicture->getClientOriginalExtension()
-                    );
-                }
-
-                // Handle the Resume PDF Upload
-                $resumePdfPath = null;
-                if ($request->hasFile('resumepdf')) {
-                    $resumePdf = $request->file('resumepdf');
-                    $resumePdfPath = $resumePdf->storeAs(
-                        'public/uploads/' . Auth::user()->code . '/resume', // Separate folder for resume PDFs
-                        'resume.' . $resumePdf->getClientOriginalExtension()
-                    );
-                }
-
-                // Update User Data
-                $user->update([
-                    'fname' => $request->fname,
-                    'lname' => $request->lname,
-                    'mname' => $request->mname,
-                    'contactno' => $request->contactno,
-                    'fullname' => ucfirst($request->fname . ' ' . $request->lname),
-                    'company' => $request->company,
+                // Create the User Profile
+                $userProfile = UserProfile::create([
+                    'code' => Auth::user()->code,
+                    'transNo' => $newtrans,
+                    'photo_pic' => $data['photo_pic'],
+                    'contact_no' => $data['contact_no'],
+                    'contact_visibility' => $data['contact_visibility'],
+                    'email' => Auth::user()->email,
+                    'email_visibility' => $data['email_visibility'],
+                    'date_birth' => $data['date_birth'],
+                    'home_country' => $data['home_country'],
+                    'current_location' => $data['current_location'],
                 ]);
 
-                // Update Resource Data
-                $resource = Resource::where('code', Auth::user()->code)->firstOrFail();
-                $resource->update([
-                    'fname' => $request->fname,
-                    'lname' => $request->lname,
-                    'mname' => $request->mname,
-                    'fullname' => ucfirst($request->fname . ' ' . $request->lname),
-                    'contact_no' => $request->contactno,
-                    'age' => $request->age,
-                    'profession' => $request->profession,
-                    'profile_picture' => $profilePicturePath,
-                    'resumepdf' => $resumePdfPath,
-                ]);
+                // Validate and insert capabilities (languages and skills)
+                if (isset($data['lines']['capability'])) {
+                    $capabilityValidator = Validator::make($data['lines']['capability'], [
+                        'language' => 'nullable|string',
+                        'skills' => 'nullable|string|max:255',
+                    ]);
 
-                // Commit Transaction
+                    if ($capabilityValidator->fails()) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => $capabilityValidator->errors()->all(),
+                        ]);
+                    }
+
+                    foreach ($data['lines']['capability'] as $capability) {
+                        // Insert capabilities data
+                        Capabilitie::create([
+                            'code' => Auth::user()->code,
+                            'transNo' => $newtrans,
+                            'language' => $capability['language'],
+                            'skills' => $capability['skills'],
+                        ]);
+                    }
+                }
+
+                // Validate and insert education data
+                if (isset($data['lines']['education'])) {
+                    $educationValidator = Validator::make($data['lines']['education'], [
+                        'highest_education' => 'nullable|string',
+                        'school_name' => 'nullable|string|max:255',
+                        'year_entry' => 'nullable|integer',
+                        'year_end' => 'nullable|integer',
+                        'status' => 'nullable|string',
+                    ]);
+
+                    if ($educationValidator->fails()) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => $educationValidator->errors()->all(),
+                        ]);
+                    }
+
+                    foreach ($data['lines']['education'] as $education) {
+                        // Insert education data
+                        Usereducation::create([
+                            'code' => Auth::user()->code,
+                            'transNo' => $newtrans,
+                            'highest_education' => $education['highest_education'],
+                            'school_name' => $education['school_name'],
+                            'year_entry' => $education['year_entry'],
+                            'year_end' => $education['year_end'],
+                            'status' => $education['status'],
+                        ]);
+                    }
+                }
+
+
+                Resource::where('code',Auth::user()->code)
+                    ->update([
+                        'date_birth' => $data['date_birth'],
+                        'home_country' => $data['home_country'],
+                        'current_location' => $data['current_location'],
+                    ]);
+
+                // Commit the transaction if everything is successful
                 DB::commit();
 
+                // Return success response
                 return response()->json([
                     'success' => true,
-                    'message' => "Information updated successfully.",
-                ], 200);
+                    'message' => 'Profile and related information saved successfully.',
+                ]);
             } catch (\Throwable $th) {
                 // Rollback transaction on error
                 DB::rollBack();
 
+                // Return error response
                 return response()->json([
                     'success' => false,
-                    'message' => $th->getMessage(),
+                    'message' => 'Error occurred: ' . $th->getMessage(),
                 ], 500);
             }
-        // }
+        }
     }
+
 
     /**
      * Display the specified resource.
@@ -168,103 +209,21 @@ class ProfileController extends Controller
         //
     }
 
+              // Resource::where('code',Auth::user()->code)
+                //     ->update([
+                //         'date_birth' => 
+                //         'home_country'=>
+                //         'current_location' => 
+                //     ]);
+
+
     /**
      * Update the specified resource in storage.
      */
 
     public function update(Request $request, $id)
     {
-        if (Auth::check()) {
-            try {
-                // Begin Transaction
-                DB::beginTransaction();
-
-                // Validate the request data
-                $validator = Validator::make($request->all(), [
-                    'fname' => 'required|string|max:255',
-                    'lname' => 'required|string|max:255',
-                    'contactno' => 'nullable|string|max:15',
-                    'password' => 'nullable|string|confirmed|min:8',
-                    'industry' => 'nullable|string|max:255',
-                    'designation' => 'nullable|string|max:255',
-                    'age' => 'nullable|integer|min:1|max:150',
-                    'profession' => 'nullable|string|max:255',
-                    'profile_picture' => 'nullable|file|mimes:jpeg,png,jpg|max:2048',
-                    'resumepdf' => 'nullable|file|mimes:pdf|max:4096',
-                ]);
-
-                // Check for validation errors
-                if ($validator->fails()) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => $validator->errors()->all(),
-                    ]);
-                }
-
-                // Find the authenticated user
-                $user = User::where('code', Auth::user()->code)->firstOrFail();
-
-                // Handle the Profile Picture Upload
-                $profilePicturePath = null;
-                if ($request->hasFile('profile_picture')) {
-                    $profilePicture = $request->file('profile_picture');
-                    $profilePicturePath = $profilePicture->storeAs(
-                        'public/uploads/' . Auth::user()->code . '/profilepicture', // Separate folder for profile pictures
-                        'profile_picture.' . $profilePicture->getClientOriginalExtension()
-                    );
-                }
-
-                // Handle the Resume PDF Upload
-                $resumePdfPath = null;
-                if ($request->hasFile('resumepdf')) {
-                    $resumePdf = $request->file('resumepdf');
-                    $resumePdfPath = $resumePdf->storeAs(
-                        'public/uploads/' . Auth::user()->code . '/resume', // Separate folder for resume PDFs
-                        'resume.' . $resumePdf->getClientOriginalExtension()
-                    );
-                }
-
-                // Update User Data
-                $user->update([
-                    'fname' => $request->fname,
-                    'lname' => $request->lname,
-                    'mname' => $request->mname,
-                    'contactno' => $request->contactno,
-                    'fullname' => ucfirst($request->fname . ' ' . $request->lname),
-                    'company' => $request->company,
-                ]);
-
-                // Update Resource Data
-                $resource = Resource::where('code', Auth::user()->code)->firstOrFail();
-                $resource->update([
-                    'fname' => $request->fname,
-                    'lname' => $request->lname,
-                    'mname' => $request->mname,
-                    'fullname' => ucfirst($request->fname . ' ' . $request->lname),
-                    'contact_no' => $request->contactno,
-                    'age' => $request->age,
-                    'profession' => $request->profession,
-                    'profile_picture' => $profilePicturePath,
-                    'resumepdf' => $resumePdfPath,
-                ]);
-
-                // Commit Transaction
-                DB::commit();
-
-                return response()->json([
-                    'success' => true,
-                    'message' => "Information updated successfully.",
-                ], 200);
-            } catch (\Throwable $th) {
-                // Rollback transaction on error
-                DB::rollBack();
-
-                return response()->json([
-                    'success' => false,
-                    'message' => $th->getMessage(),
-                ], 500);
-            }
-        }
+        
     }
 
 
@@ -278,3 +237,43 @@ class ProfileController extends Controller
         //
     }
 }
+
+
+// {
+//     "photo_pic": "profile.jpg",
+//     "contact_no": "+1234567890",
+//     "contact_visibility": true,
+//     "email_visibility": false,
+//     "date_birth": "1990-01-01",
+//     "home_country": "United States",
+//     "current_location": "New York",
+//     "lines": {
+//       "capability": [
+//         {
+//           "language": "English",
+//           "skills": "Programming"
+//         },
+//         {
+//           "language": "Spanish",
+//           "skills": "Translation"
+//         }
+//       ],
+//       "education": [
+//         {
+//           "highest_education": "Bachelor's Degree",
+//           "school_name": "Harvard University",
+//           "year_entry": 2010,
+//           "year_end": 2014,
+//           "status": "Graduated"
+//         },
+//         {
+//           "highest_education": "Master's Degree",
+//           "school_name": "MIT",
+//           "year_entry": 2015,
+//           "year_end": 2017,
+//           "status": "Graduated"
+//         }
+//       ]
+//     }
+//   }
+  
