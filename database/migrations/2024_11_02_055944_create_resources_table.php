@@ -13,7 +13,6 @@ return new class extends Migration
     {
 
         Schema::create('resources', function (Blueprint $table) {
-            
             $table->id();
             $table->integer('code')->unique(); 
             $table->string('fname')->nullable();//done
@@ -29,14 +28,11 @@ return new class extends Migration
             $table->string('companywebsite')->nullable(); //done
             $table->string('role_code')->nullable();
             $table->string('designation')->nullable();
+            $table->date('date_birth')->nullable();
+            $table->string('home_country')->nullable(); // Home country
+            $table->string('current_location')->nullable();
             $table->string('profile_picture')->nullable();
             $table->string('resumepdf')->nullable();
-            
-            // $table->string('address1')->nullable();
-            // $table->string('address2')->nullable();
-            // $table->string('city')->nullable();
-            // $table->string('province')->nullable();
-            // $table->string('postal_code')->nullable();
 
             $table->string('h1_fname')->nullable();
             $table->string('h1_lname')->nullable();
