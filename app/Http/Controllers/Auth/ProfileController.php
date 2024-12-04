@@ -62,10 +62,20 @@ class ProfileController extends Controller
      {
          // Check if the user is authenticated
          if (Auth::check()) {
+
+
+
              // Begin Transaction
-             DB::beginTransaction();
+            
      
              try {
+
+                DB::beginTransaction();
+                $exist = UserProfile::where('code', Auth::user()->code)->exists();
+                if ($exist) {
+                    DB::rollBack();
+                    return response()->json(['success' => false, 'message' => 'You already created your profile. You can\'t add another, but you can update it.']);
+                }
                  $data = $request->all();
      
                  // Validate the request data for the user profile
