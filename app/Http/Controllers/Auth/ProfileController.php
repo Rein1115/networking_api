@@ -239,6 +239,7 @@ class ProfileController extends Controller
 }
 
 
+//    *** STORE ***
 // {
 //     "photo_pic": "profile.jpg",
 //     "contact_no": "+1234567890",
