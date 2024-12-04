@@ -11,8 +11,9 @@ use App\Models\Resource;
 use App\Models\Usercapabilitie;
 use App\Models\Usereducation;
 use App\Models\Userprofile;
+use App\Models\Userseminar;
+use App\Models\Usertraining;
 use DB;
-
 use Illuminate\Support\Facades\File; 
 
 
@@ -62,14 +63,8 @@ class ProfileController extends Controller
      {
          // Check if the user is authenticated
          if (Auth::check()) {
-
-
-
-             // Begin Transaction
-            
      
              try {
-
                 DB::beginTransaction();
                 $exist = UserProfile::where('code', Auth::user()->code)->exists();
                 if ($exist) {
@@ -104,10 +99,8 @@ class ProfileController extends Controller
                  $photoPath = null;
                  if ($request->hasFile('photo_pic')) {
                      $file = $request->file('photo_pic');
-     
                      // Define the folder path based on the user's code
                      $folderPath = "uploads/{$userCode}/cvphoto";
-     
                      // Store the file and get the stored path
                      $photoPath = $file->store($folderPath, 'public');
                  }
@@ -167,7 +160,6 @@ class ProfileController extends Controller
      
                  // Commit the transaction if everything is successful
                  DB::commit();
-     
                  // Return success response
                  return response()->json([
                      'success' => true,
