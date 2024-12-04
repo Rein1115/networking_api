@@ -205,14 +205,6 @@ class ProfileController extends Controller
         //
     }
 
-              // Resource::where('code',Auth::user()->code)
-                //     ->update([
-                //         'date_birth' => 
-                //         'home_country'=>
-                //         'current_location' => 
-                //     ]);
-
-
     /**
      * Update the specified resource in storage.
      */
