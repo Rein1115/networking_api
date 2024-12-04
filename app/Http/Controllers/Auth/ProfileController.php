@@ -106,7 +106,7 @@ class ProfileController extends Controller
                      $file = $request->file('photo_pic');
      
                      // Define the folder path based on the user's code
-                     $folderPath = "uploads/{$userCode}/resume";
+                     $folderPath = "uploads/{$userCode}/cvphoto";
      
                      // Store the file and get the stored path
                      $photoPath = $file->store($folderPath, 'public');
