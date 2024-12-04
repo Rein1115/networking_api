@@ -3,89 +3,162 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>User Profile</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
+    <h1>User Profile</h1>
+    
+        <!-- Photo Upload -->
+        <label for="photo_pic">Profile Photo:</label>
+        <input type="file" id="photo_pic" name="photo_pic"><br><br>
 
-    <!-- Text fields for user details -->
-    <label for="fname">First Name</label>
-    <input type="text" name="fname" id="fname" value="" required>
-    
-    <label for="lname">Last Name</label>
-    <input type="text" name="lname" id="lname" value="" required>
-    
-    <label for="contactno">Contact Number</label>
-    <input type="text" name="contactno" id="contactno" value="" required>
-    
-    <label for="industry">Industry</label>
-    <input type="text" name="industry" id="industry" value="">
-    
-    <label for="designation">Designation</label>
-    <input type="text" name="designation" id="designation" value="">
-    
-    <label for="age">Age</label>
-    <input type="number" name="age" id="age" value="">
-    
-    <label for="profession">Profession</label>
-    <input type="text" name="profession" id="profession" value="">
-    
-    <!-- File upload fields -->
-    <label for="profile_picture">Profile Picture (JPEG, PNG, JPG)</label>
-    <input type="file" name="profile_picture" id="profile_picture" accept="image/jpeg, image/png, image/jpg">
-    
-    <label for="resumepdf">Resume PDF (PDF only)</label>
-    <input type="file" name="resumepdf" id="resumepdf" accept="application/pdf">
-    
-    <!-- Submit button -->
-    <button type="submit" id="submitBtn">Update Information</button>
+        <!-- Contact Information -->
+        <label for="contact_no">Contact Number:</label>
+        <input type="text" id="contact_no" name="contact_no"><br><br>
 
-    <!-- Display error message -->
-    <div id="error-message" style="color: red; display: none;"></div>
+        <label for="contact_visibility">Show Contact Number:</label>
+        <input type="checkbox" id="contact_visibility" name="contact_visibility" value="1"><br><br>
 
-    <!-- Success message -->
-    <div id="success-message" style="color: green; display: none;"></div>
+        <label for="email_visibility">Show Email:</label>
+        <input type="checkbox" id="email_visibility" name="email_visibility" value="1"><br><br>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <label for="date_birth">Date of Birth:</label>
+        <input type="date" id="date_birth" name="date_birth"><br><br>
+
+        <label for="home_country">Home Country:</label>
+        <input type="text" id="home_country" name="home_country"><br><br>
+
+        <label for="current_location">Current Location:</label>
+        <input type="text" id="current_location" name="current_location"><br><br>
+
+        <!-- Capabilities -->
+        <h2>Capabilities</h2>
+        <div id="capabilities">
+            <div class="capability">
+                <label>Language:</label>
+                <input type="text" name="language_1" class="language">
+                <label>Skills:</label>
+                <input type="text" name="skills_1" class="skills">
+            </div>
+        </div>
+        <button type="button" id="addCapability">Add Capability</button><br><br>
+
+        <!-- Education -->
+        <h2>Education</h2>
+        <div id="educations">
+            <div class="education">
+                <label>Highest Education:</label>
+                <input type="text" name="highest_education_1" class="highest_education">
+                <label>School Name:</label>
+                <input type="text" name="school_name_1" class="school_name">
+                <label>Year Entry:</label>
+                <input type="number" name="year_entry_1" class="year_entry">
+                <label>Year End:</label>
+                <input type="number" name="year_end_1" class="year_end">
+                <label>Status:</label>
+                <input type="text" name="status_1" class="status">
+            </div>
+        </div>
+        <button type="button" id="addEducation">Add Education</button><br><br>
+        <button type="submit" id="save">Save Profile</button>
+
+
     <script>
-        $(document).ready(function () {
+      $('#save').on('click', function(event) {
+        
+        // return console.log($('#photo_pic')[0].files[0]);
+    event.preventDefault();
 
+    // Create the structured data object
+    const formDataObject = {
+        "photo_pic": $('#photo_pic')[0].files[0], // File input
+        "contact_no": "+1234567890",
+        "contact_visibility": 0,
+        "email_visibility": 1,
+        "date_birth": "1990-01-01",
+        "home_country": "United States",
+        "current_location": "New York",
+        "lines": {
+            "capability": [
+                {
+                    "language": "English",
+                    "skills": "Programming"
+                },
+                {
+                    "language": "Spanish",
+                    "skills": "Translation"
+                }
+            ],
+            "education": [
+                {
+                    "highest_education": "Bachelor's Degree",
+                    "school_name": "Harvard University",
+                    "year_entry": 2010,
+                    "year_end": 2014,
+                    "status": "Graduated"
+                },
+                {
+                    "highest_education": "Master's Degree",
+                    "school_name": "MIT",
+                    "year_entry": 2015,
+                    "year_end": 2017,
+                    "status": "Graduated"
+                }
+            ]
+        }
+    };
 
-            $('#submitBtn').on('click', function (e) {
-                var token = '1|EjqMtn3y0qa7K7KO8QuZAEDczZiqwKsoZDYKKiir96ff2aae';
+    // Convert the structured object into FormData
+    const formData = new FormData();
 
-                                // Create FormData object
-                // var formData = new FormData();
+    // Append file separately
+    formData.append('photo_pic', formDataObject.photo_pic);
 
-                const formData = new FormData();
-                formData.append('fname', this.fname);
-                formData.append('lname', this.lname);
-                formData.append('contactno', this.contactno);
-                formData.append('mname', this.mname);
-                formData.append('company', this.company);
-                formData.append('age', this.age);
-                formData.append('profession', this.profession);
-                formData.append('profile_picture', this.profilePicture);  // Assuming file input for profile picture
-                formData.append('resumepdf', this.resumePdf);  // Assuming file input for resume
+    // Append the rest of the fields dynamically
+    for (const key in formDataObject) {
+        if (key !== 'lines' && key !== 'photo_pic') {
+            formData.append(key, formDataObject[key]);
+        }
+    }
 
-axios.put('http://127.0.0.1:8001/api/profile/0' + formData, {
-  headers: {
-    'Content-Type': 'multipart/form-data',
-    'Authorization': `Bearer ${token}`,
-  }
-})
-.then(response => {
-  console.log(response.data);
-})
-.catch(error => {
-  console.error(error.response.data);
+    // Handle nested objects for `lines`
+    formDataObject.lines.capability.forEach((capability, index) => {
+        formData.append(`lines[capability][${index}][language]`, capability.language);
+        formData.append(`lines[capability][${index}][skills]`, capability.skills);
+    });
+
+    formDataObject.lines.education.forEach((education, index) => {
+        formData.append(`lines[education][${index}][highest_education]`, education.highest_education);
+        formData.append(`lines[education][${index}][school_name]`, education.school_name);
+        formData.append(`lines[education][${index}][year_entry]`, education.year_entry);
+        formData.append(`lines[education][${index}][year_end]`, education.year_end);
+        formData.append(`lines[education][${index}][status]`, education.status);
+    });
+
+    // Get the Bearer token (assuming it's stored in localStorage or cookies)
+    const bearerToken = '1|jegIt1n4LvOyORq6ayO7yH1ng2kWr35Uai30WyJhb444d125';  // or wherever you're storing the token
+
+    // Send the FormData object via Axios with Bearer Token
+    axios.post('http://127.0.0.1:8000/api/profile/', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': `Bearer ${bearerToken}`, // Add Bearer token in the headers
+        },
+    })
+    .then(response => {
+        console.log(response.data);  // Success message
+        // alert('Profile successfully updated!');
+    })
+    .catch(error => {
+        console.error(error.response ? error.response.data : error.message); // Handle errors
+        alert('An error occurred. Please try again.');
+    });
 });
 
 
-            });
-        });
-    </script>
 
+    </script>
 </body>
 </html>
