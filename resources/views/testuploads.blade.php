@@ -178,10 +178,10 @@
     });
 
     // Get the Bearer token (assuming it's stored in localStorage or cookies)
-    const bearerToken = '1|qWvA0ds4vId7vWg2lzvzmHAaRkM463E3V8tRuAfuc8dbb6b7';  
+    const bearerToken = '2|xW5WlAmgJJe5fIVKMoiPzjxr1u5HjzjFZDon90zT871e0836';  
 
     // Send the FormData object via Axios with Bearer Token
-    axios.post('http://127.0.0.1:8001/api/profile/', formData, {
+    axios.post('http://127.0.0.1:8000/api/profile/', formData, {
         headers: {
             'Content-Type': 'multipart/form-data',
             'Authorization': `Bearer ${bearerToken}`,
