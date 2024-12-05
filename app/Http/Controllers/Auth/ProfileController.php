@@ -278,7 +278,7 @@ class ProfileController extends Controller
 
 //    *** STORE ***
 // {
-//     "photo_pic": null, 
+//     "photo_pic": null,
 //     "contact_no": "1234567890",
 //     "contact_visibility": 1,
 //     "email_visibility": 1,
@@ -287,81 +287,81 @@ class ProfileController extends Controller
 //     "home_country": "USA",
 //     "current_location": "New York",
 //     "lines": {
-//       "capability": [
-//         {
-//           "language": "English",
-//           "skills": "Communication"
-//         },
-//         {
-//           "language": "Spanish",
-//           "skills": "Translation"
-//         }
-//       ],
-//       "education": [
-//         {
-//           "highest_education": "Bachelor's Degree",
-//           "school_name": "University of Example",
-//           "year_entry": 2008,
-//           "year_end": 2012,
-//           "status": "Completed"
-//         },
-//          {
-//           "highest_education": "Bachelor's Degree1",
-//           "school_name": "University of Example",
-//           "year_entry": 2008,
-//           "year_end": 2012,
-//           "status": "Completed"
-//         }
-//       ],
-//       "training": [
-//         {
-//           "training_title": "Leadership Training",
-//           "training_provider": "Leadership Institute",
-//           "trainingdate": "2020-06-15"
-//         },
-//               {
-//           "training_title": "Leadership Training2",
-//           "training_provider": "Leadership Institute",
-//           "trainingdate": "2020-06-15"
-//         }
-//       ],
-//       "seminar": [
-//         {
-//           "seminar_title": "Advanced Laravel",
-//           "seminar_provider": "Laravel Academy",
-//           "seminardate": "2022-03-20"
-//         },
-//          {
-//           "seminar_title": "Advanced Laravel2",
-//           "seminar_provider": "Laravel Academy2",
-//           "seminardate": "2022-03-20"
-//         }
-//       ],
-//    "employment": [
-//       {
-//           "company_name": "Tech Corp",
-//          "position": "Software Engineer",
-//         "job_description": "Developing web applications",
-//          "date_completed": "2023-11-01"
-//      },
-//      {
-//          "company_name": "Dev Solutions",
-//          "position": "Senior Developer",
-//         "job_description": "Leading a development team and building scalable solutions",
-//          "date_completed": "2024-02-01"
-//      }
-//  ],
-//    "certificate" : [
-//        {
-//            'certificate_title' :"certifacate title" ,
-//            'certificate_provider' : "certificate_provider",
-//            'date_completed' : "2024-02-01",
-//        }
-//    ],
-// {
-//     'certificate_title' :"certifacate title2" ,
-//     'certificate_provider' : "certificate_provider2",
-//     'date_completed' : "2024-02-01",
-// }
+//         "capability": [
+//             {
+//                 "language": "English",
+//                 "skills": "Communication"
+//             },
+//             {
+//                 "language": "Spanish",
+//                 "skills": "Translation"
+//             }
+//         ],
+//         "education": [
+//             {
+//                 "highest_education": "Bachelor's Degree",
+//                 "school_name": "University of Example",
+//                 "year_entry": 2008,
+//                 "year_end": 2012,
+//                 "status": "Completed"
+//             },
+//             {
+//                 "highest_education": "Bachelor's Degree1",
+//                 "school_name": "University of Example",
+//                 "year_entry": 2008,
+//                 "year_end": 2012,
+//                 "status": "Completed"
+//             }
+//         ],
+//         "training": [
+//             {
+//                 "training_title": "Leadership Training",
+//                 "training_provider": "Leadership Institute",
+//                 "trainingdate": "2020-06-15"
+//             },
+//             {
+//                 "training_title": "Leadership Training2",
+//                 "training_provider": "Leadership Institute",
+//                 "trainingdate": "2020-06-15"
+//             }
+//         ],
+//         "seminar": [
+//             {
+//                 "seminar_title": "Advanced Laravel",
+//                 "seminar_provider": "Laravel Academy",
+//                 "seminardate": "2022-03-20"
+//             },
+//             {
+//                 "seminar_title": "Advanced Laravel2",
+//                 "seminar_provider": "Laravel Academy2",
+//                 "seminardate": "2022-03-20"
+//             }
+//         ],
+//         "employment": [
+//             {
+//                 "company_name": "Tech Corp",
+//                 "position": "Software Engineer",
+//                 "job_description": "Developing web applications",
+//                 "date_completed": "2023-11-01"
+//             },
+//             {
+//                 "company_name": "Dev Solutions",
+//                 "position": "Senior Developer",
+//                 "job_description": "Leading a development team and building scalable solutions",
+//                 "date_completed": "2024-02-01"
+//             }
+//         ],
+//         "certificate": [
+//             {
+//                 "certificate_title": "Certificate Title",
+//                 "certificate_provider": "Certificate Provider",
+//                 "date_completed": "2024-02-01"
+//             },
+//             {
+//                 "certificate_title": "Certificate Title2",
+//                 "certificate_provider": "Certificate Provider2",
+//                 "date_completed": "2024-02-01"
+//             }
+//         ]
 //     }
-//   }
+// }
