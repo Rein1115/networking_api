@@ -134,6 +134,32 @@
                         "seminar_provider": "Laravel Academy2",
                         "seminardate": "2022-03-20"
                       }
+                    ],
+                    "employment": [
+                        {
+                            "company_name": "Tech Corp",
+                            "position": "Software Engineer",
+                            "job_description": "Developing web applications",
+                            "date_completed": "2023-11-01"
+                        },
+                        {
+                            "company_name": "Dev Solutions",
+                            "position": "Senior Developer",
+                            "job_description": "Leading a development team and building scalable solutions",
+                            "date_completed": "2024-02-01"
+                        }
+                    ],
+                    "certificate" : [
+                        {
+                            'certificate_title' :"certifacate title" ,
+                            'certificate_provider' : "certificate_provider",
+                            'date_completed' : "2024-02-01",
+                        },
+                        {
+                            'certificate_title' :"certifacate title2" ,
+                            'certificate_provider' : "certificate_provider2",
+                            'date_completed' : "2024-02-01",
+                        }
                     ]
         }
     };
@@ -177,8 +203,31 @@
         formData.append(`lines[seminar][${index}][seminardate]`, seminar.seminardate);
     });
 
+    
+    formDataObject.lines.employment.forEach((employment, index) => {
+        formData.append(`lines[employment][${index}][company_name]`, employment.company_name);
+        formData.append(`lines[employment][${index}][position]`, employment.position);
+        formData.append(`lines[employment][${index}][job_description]`, employment.job_description);
+        formData.append(`lines[employment][${index}][date_completed]`, employment.date_completed);
+    });
+
+
+    formDataObject.lines.employment.forEach((employment, index) => {
+        formData.append(`lines[employment][${index}][company_name]`, employment.company_name);
+        formData.append(`lines[employment][${index}][position]`, employment.position);
+        formData.append(`lines[employment][${index}][job_description]`, employment.job_description);
+        formData.append(`lines[employment][${index}][date_completed]`, employment.date_completed);
+    });
+
+    formDataObject.lines.certificate.forEach((certificate, index) => {
+        formData.append(`lines[certificate][${index}][certificate_title]`, certificate.certificate_title);
+        formData.append(`lines[certificate][${index}][certificate_provider]`, certificate.certificate_provider);
+        formData.append(`lines[certificate][${index}][date_completed]`, certificate.date_completed);
+    });
+
+
     // Get the Bearer token (assuming it's stored in localStorage or cookies)
-    const bearerToken = '2|xW5WlAmgJJe5fIVKMoiPzjxr1u5HjzjFZDon90zT871e0836';  
+    const bearerToken = '1|WOKReERyOQIIcqkhTbizNgISPwBRpAlWnvsfYkTH8d92bb8e';  
 
     // Send the FormData object via Axios with Bearer Token
     axios.post('http://127.0.0.1:8000/api/profile/', formData, {

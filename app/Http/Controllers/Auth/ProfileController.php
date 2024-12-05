@@ -13,6 +13,8 @@ use App\Models\Usereducation;
 use App\Models\Userprofile;
 use App\Models\Userseminar;
 use App\Models\Usertraining;
+use App\Models\Useremploymentrecord;
+use App\Models\Usercertificate;
 use DB;
 use Illuminate\Support\Facades\File; 
 
@@ -63,8 +65,8 @@ class ProfileController extends Controller
      {
          // Check if the user is authenticated
          if (Auth::check()) {
-     
-             try {
+    
+            try {
                 DB::beginTransaction();
                 $exist = UserProfile::where('code', Auth::user()->code)->exists();
                 if ($exist) {
@@ -175,17 +177,47 @@ class ProfileController extends Controller
                         ]);
                     }
                 }
-     
+
+                if (isset($data['lines']['employment'])) {
+                    foreach ($data['lines']['employment'] as $employment) {
+                        Useremploymentrecord::create([
+                            'code' => $userCode,
+                            'transNo' => $newtrans,
+                            'company_name' => $employment['company_name'],
+                            'position' => $employment['position'],
+                            'job_description' => $employment['job_description'],
+                            'date_completed' => $employment['date_completed'],
+                        ]);
+                    }
+                }
+
+
+
+
+                if (isset($data['lines']['certificate'])) {
+                    foreach ($data['lines']['certificate'] as $certificate) {
+                        Usercertificate::create([
+                            'code' => $userCode,
+                            'transNo' => $newtrans,
+                            'certificate_title' => $certificate['certificate_title'],
+                            'certificate_provider' => $certificate['certificate_provider'],
+                            'date_completed' => $certificate['date_completed'],
+                        ]);
+                    }
+                }
+
+
                  // Update resource data
                  Resource::where('code', $userCode)
-                     ->update([
+                    ->update([
+                         'contact_no' => $data['contact_no'],
                          'date_birth' => $data['date_birth'],
                          'home_country' => $data['home_country'],
                          'current_location' => $data['current_location'],
-                     ]);
-     
+                    ]);
+
                  // Commit the transaction if everything is successful
-                 DB::commit();
+                  DB::commit();
                  // Return success response
                  return response()->json([
                      'success' => true,
@@ -194,7 +226,7 @@ class ProfileController extends Controller
              } catch (\Throwable $th) {
                  // Rollback transaction on error
                  DB::rollBack();
-     
+
                  // Return error response
                  return response()->json([
                      'success' => false,
@@ -203,7 +235,6 @@ class ProfileController extends Controller
              }
          }
      }
-     
 
     /**
      * Display the specified resource.
@@ -305,7 +336,32 @@ class ProfileController extends Controller
 //           "seminar_provider": "Laravel Academy2",
 //           "seminardate": "2022-03-20"
 //         }
-//       ]
+//       ],
+//    "employment": [
+//       {
+//           "company_name": "Tech Corp",
+//          "position": "Software Engineer",
+//         "job_description": "Developing web applications",
+//          "date_completed": "2023-11-01"
+//      },
+//      {
+//          "company_name": "Dev Solutions",
+//          "position": "Senior Developer",
+//         "job_description": "Leading a development team and building scalable solutions",
+//          "date_completed": "2024-02-01"
+//      }
+//  ],
+//    "certificate" : [
+//        {
+//            'certificate_title' :"certifacate title" ,
+//            'certificate_provider' : "certificate_provider",
+//            'date_completed' : "2024-02-01",
+//        }
+//    ],
+// {
+//     'certificate_title' :"certifacate title2" ,
+//     'certificate_provider' : "certificate_provider2",
+//     'date_completed' : "2024-02-01",
+// }
 //     }
 //   }
-  
