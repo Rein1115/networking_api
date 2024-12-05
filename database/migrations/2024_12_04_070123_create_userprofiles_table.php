@@ -20,6 +20,7 @@ return new class extends Migration
             $table->boolean('contact_visibility')->default(0); // 0 = hide, 1 = show
             $table->string('email')->unique()->nullable(); // Email address
             $table->boolean('email_visibility')->default(0); // 0 = hide, 1 = show
+            $table->string('summary')->nullable();
             $table->date('date_birth')->nullable(); // Date of birth
             $table->string('home_country')->nullable(); // Home country
             $table->string('current_location')->nullable(); 

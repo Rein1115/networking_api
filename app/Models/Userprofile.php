@@ -17,6 +17,7 @@ class Userprofile extends Model
         'contact_visibility',
         'email',
         'email_visibility',
+        'summary',
         'date_birth',
         'home_country',
         'current_location',

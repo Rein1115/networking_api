@@ -79,6 +79,7 @@ class ProfileController extends Controller
                      'contact_no' => 'nullable|string|max:255',
                      'contact_visibility' => 'nullable|integer',
                      'email_visibility' => 'nullable|integer',
+                     'summary' => 'nullable|string',
                      'date_birth' => 'nullable|date',
                      'home_country' => 'nullable|string|max:255',
                      'current_location' => 'nullable|string|max:255',
@@ -118,6 +119,7 @@ class ProfileController extends Controller
                      'contact_visibility' => $data['contact_visibility'],
                      'email' => Auth::user()->email,
                      'email_visibility' => $data['email_visibility'],
+                     'summary' => $data['summary'],
                      'date_birth' => $data['date_birth'],
                      'home_country' => $data['home_country'],
                      'current_location' => $data['current_location'],
@@ -149,6 +151,30 @@ class ProfileController extends Controller
                          ]);
                      }
                  }
+
+                 if (isset($data['lines']['training'])) {
+                    foreach ($data['lines']['training'] as $trainings) {
+                        Usertraining::create([
+                            'code' => $userCode,
+                            'transNo' => $newtrans,
+                            'training_title' => $trainings['training_title'],
+                            'training_provider' => $trainings['training_provider'],
+                            'date_completed' => $trainings['trainingdate'],
+                        ]);
+                    }
+                }
+
+                if (isset($data['lines']['seminar'])) {
+                    foreach ($data['lines']['seminar'] as $seminar) {
+                        Userseminar::create([
+                            'code' => $userCode,
+                             'transNo' => $newtrans,
+                            'seminar_title' => $seminar['seminar_title'],
+                            'seminar_provider' => $seminar['seminar_provider'],
+                            'date_completed' => $seminar['seminardate'],
+                        ]);
+                    }
+                }
      
                  // Update resource data
                  Resource::where('code', $userCode)
@@ -221,18 +247,19 @@ class ProfileController extends Controller
 
 //    *** STORE ***
 // {
-//     "photo_pic": "profile.jpg",
-//     "contact_no": "+1234567890",
-//     "contact_visibility": true,
-//     "email_visibility": false,
+//     "photo_pic": null, 
+//     "contact_no": "1234567890",
+//     "contact_visibility": 1,
+//     "email_visibility": 1,
+//     "summary": "A brief summary about myself.",
 //     "date_birth": "1990-01-01",
-//     "home_country": "United States",
+//     "home_country": "USA",
 //     "current_location": "New York",
 //     "lines": {
 //       "capability": [
 //         {
 //           "language": "English",
-//           "skills": "Programming"
+//           "skills": "Communication"
 //         },
 //         {
 //           "language": "Spanish",
@@ -242,18 +269,43 @@ class ProfileController extends Controller
 //       "education": [
 //         {
 //           "highest_education": "Bachelor's Degree",
-//           "school_name": "Harvard University",
-//           "year_entry": 2010,
-//           "year_end": 2014,
-//           "status": "Graduated"
+//           "school_name": "University of Example",
+//           "year_entry": 2008,
+//           "year_end": 2012,
+//           "status": "Completed"
 //         },
-//         {
-//           "highest_education": "Master's Degree",
-//           "school_name": "MIT",
-//           "year_entry": 2015,
-//           "year_end": 2017,
-//           "status": "Graduated"
+//          {
+//           "highest_education": "Bachelor's Degree1",
+//           "school_name": "University of Example",
+//           "year_entry": 2008,
+//           "year_end": 2012,
+//           "status": "Completed"
 //         }
-//       ]
+//       ],
+    //   "training": [
+    //     {
+    //       "training_title": "Leadership Training",
+    //       "training_provider": "Leadership Institute",
+    //       "trainingdate": "2020-06-15"
+    //     },
+    //           {
+    //       "training_title": "Leadership Training2",
+    //       "training_provider": "Leadership Institute",
+    //       "trainingdate": "2020-06-15"
+    //     }
+    //   ],
+    //   "seminar": [
+    //     {
+    //       "seminar_title": "Advanced Laravel",
+    //       "seminar_provider": "Laravel Academy",
+    //       "seminardate": "2022-03-20"
+    //     },
+    //      {
+    //       "seminar_title": "Advanced Laravel2",
+    //       "seminar_provider": "Laravel Academy2",
+    //       "seminardate": "2022-03-20"
+    //     }
+    //   ]
 //     }
 //   }
+  

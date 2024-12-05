@@ -27,6 +27,9 @@
         <label for="date_birth">Date of Birth:</label>
         <input type="date" id="date_birth" name="date_birth"><br><br>
 
+        <label for="date_birth">Date of Birth:</label>
+        <input type="date" id="summary" name="summary"><br><br>
+
         <label for="home_country">Home Country:</label>
         <input type="text" id="home_country" name="home_country"><br><br>
 
@@ -77,6 +80,7 @@
         "contact_no": "+1234567890",
         "contact_visibility": 0,
         "email_visibility": 1,
+        "summary" : "this is the summary of my self example.",
         "date_birth": "1990-01-01",
         "home_country": "United States",
         "current_location": "New York",
@@ -106,7 +110,31 @@
                     "year_end": 2017,
                     "status": "Graduated"
                 }
-            ]
+            ],
+           "training": [
+                      {
+                        "training_title": "Leadership Training",
+                        "training_provider": "Leadership Institute",
+                        "trainingdate": "2020-06-15"
+                      },
+                            {
+                        "training_title": "Leadership Training2",
+                        "training_provider": "Leadership Institute",
+                        "trainingdate": "2020-06-15"
+                      }
+                    ],
+                    "seminar": [
+                      {
+                        "seminar_title": "Advanced Laravel",
+                        "seminar_provider": "Laravel Academy",
+                        "seminardate": "2022-03-20"
+                      },
+                      {
+                        "seminar_title": "Advanced Laravel2",
+                        "seminar_provider": "Laravel Academy2",
+                        "seminardate": "2022-03-20"
+                      }
+                    ]
         }
     };
 
@@ -137,19 +165,30 @@
         formData.append(`lines[education][${index}][status]`, education.status);
     });
 
+    formDataObject.lines.training.forEach((training, index) => {
+        formData.append(`lines[training][${index}][training_title]`, training.training_title);
+        formData.append(`lines[training][${index}][training_provider]`, training.training_provider);
+        formData.append(`lines[training][${index}][trainingdate]`, training.trainingdate);
+    });
+
+    formDataObject.lines.seminar.forEach((seminar, index) => {
+        formData.append(`lines[seminar][${index}][seminar_title]`, seminar.seminar_title);
+        formData.append(`lines[seminar][${index}][seminar_provider]`, seminar.seminar_provider);
+        formData.append(`lines[seminar][${index}][seminardate]`, seminar.seminardate);
+    });
+
     // Get the Bearer token (assuming it's stored in localStorage or cookies)
-    const bearerToken = '1|jegIt1n4LvOyORq6ayO7yH1ng2kWr35Uai30WyJhb444d125';  // or wherever you're storing the token
+    const bearerToken = '1|qWvA0ds4vId7vWg2lzvzmHAaRkM463E3V8tRuAfuc8dbb6b7';  
 
     // Send the FormData object via Axios with Bearer Token
-    axios.post('http://127.0.0.1:8000/api/profile/', formData, {
+    axios.post('http://127.0.0.1:8001/api/profile/', formData, {
         headers: {
             'Content-Type': 'multipart/form-data',
-            'Authorization': `Bearer ${bearerToken}`, // Add Bearer token in the headers
+            'Authorization': `Bearer ${bearerToken}`,
         },
     })
     .then(response => {
-        console.log(response.data);  // Success message
-        // alert('Profile successfully updated!');
+        console.log(response.data);
     })
     .catch(error => {
         console.error(error.response ? error.response.data : error.message); // Handle errors
