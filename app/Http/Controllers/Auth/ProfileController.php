@@ -282,30 +282,30 @@ class ProfileController extends Controller
 //           "status": "Completed"
 //         }
 //       ],
-    //   "training": [
-    //     {
-    //       "training_title": "Leadership Training",
-    //       "training_provider": "Leadership Institute",
-    //       "trainingdate": "2020-06-15"
-    //     },
-    //           {
-    //       "training_title": "Leadership Training2",
-    //       "training_provider": "Leadership Institute",
-    //       "trainingdate": "2020-06-15"
-    //     }
-    //   ],
-    //   "seminar": [
-    //     {
-    //       "seminar_title": "Advanced Laravel",
-    //       "seminar_provider": "Laravel Academy",
-    //       "seminardate": "2022-03-20"
-    //     },
-    //      {
-    //       "seminar_title": "Advanced Laravel2",
-    //       "seminar_provider": "Laravel Academy2",
-    //       "seminardate": "2022-03-20"
-    //     }
-    //   ]
+//       "training": [
+//         {
+//           "training_title": "Leadership Training",
+//           "training_provider": "Leadership Institute",
+//           "trainingdate": "2020-06-15"
+//         },
+//               {
+//           "training_title": "Leadership Training2",
+//           "training_provider": "Leadership Institute",
+//           "trainingdate": "2020-06-15"
+//         }
+//       ],
+//       "seminar": [
+//         {
+//           "seminar_title": "Advanced Laravel",
+//           "seminar_provider": "Laravel Academy",
+//           "seminardate": "2022-03-20"
+//         },
+//          {
+//           "seminar_title": "Advanced Laravel2",
+//           "seminar_provider": "Laravel Academy2",
+//           "seminardate": "2022-03-20"
+//         }
+//       ]
 //     }
 //   }
   
